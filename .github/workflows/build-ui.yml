@@ -41,7 +41,7 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./build
+        publish_dir: ./web-ui/build
         publish_branch: github-pages
         user_name: "build-bot"
         user_email: "github_bot@github.com"
