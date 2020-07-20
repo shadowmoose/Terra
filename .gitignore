@@ -4,6 +4,8 @@ images/
 oryx.zip
 binaries/
 
+package-lock.json
+
 *.unencrypted.png
 
 
@@ -24,7 +26,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-web-ui/src/game/
 lib64/
 parts/
 sdist/

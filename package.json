@@ -7,15 +7,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "express": "^4.17.1",
     "imagemin": "^7.0.1",
     "imagemin-pngquant": "^9.0.0",
     "isomorphic-fetch": "^2.2.1",
     "pixl-canvas-plus": "^2.0.7",
-    "pngjs": "^5.0.0"
-  },
-  "devDependencies": {
+    "pngjs": "^5.0.0",
     "canvas": "^2.6.1",
     "image-scramble": "^2.2.2",
     "superagent": "^5.2.2",
