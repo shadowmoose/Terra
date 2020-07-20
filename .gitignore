@@ -4,6 +4,8 @@ images/
 oryx.zip
 binaries/
 
+package-lock.json
+
 *.unencrypted.png
 
 
