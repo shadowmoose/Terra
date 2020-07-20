@@ -42,7 +42,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./web-ui/build
-        publish_branch: github-pages
+        publish_branch: gh-pages
         user_name: "build-bot"
         user_email: "github_bot@github.com"
         allow_empty_commit: false
