@@ -34,6 +34,8 @@ jobs:
       run: |
         cd web-ui
         npm run build
+      env:
+       CI: ""
         
     - name: Deploy to Web
       uses: peaceiris/actions-gh-pages@v3
