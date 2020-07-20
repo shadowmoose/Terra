@@ -24,7 +24,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-web-ui/src/game/
 lib64/
 parts/
 sdist/
