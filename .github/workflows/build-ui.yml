@@ -25,18 +25,17 @@ jobs:
       with:
         node-version: '12'
 
-    - name: Install Requirements
-      run: |
-        cd web-ui
-        yarn install --frozen-lockfile
-        npm run build
-        
+    - name: Install Requirements (cached)
+      uses: bahmutov/npm-install@v1
+      with:
+        working-directory: web-ui
         
     - name: Build
       run: |
+        cd web-ui
         npm run build
         
-    - name: Deploy to release-metadata branch
+    - name: Deploy to Web
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
