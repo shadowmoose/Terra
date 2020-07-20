@@ -1,5 +1,5 @@
 The art used by this program comes from many locations,
-but a primary soruce is from (licensed) ORYX sprite packs.
+but a primary source is from (licensed) ORYX sprite packs.
 
 While the non-ORYX sprites fall under public domain,
 the rest fall under this license agreement: https://www.oryxdesignlab.com/license
