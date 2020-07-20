@@ -1,0 +1,21 @@
+{
+  "name": "terra-server",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "author": "ShadowMoose",
+  "license": "MIT",
+  "bin": "src/server.js",
+  "private": true,
+  "scripts": {
+    "server-run": "node ./src/server.js --port=9000",
+    "server-compile": "npx pkg . --out-path=./binaries"
+  },
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "nat-upnp": "^1.1.1",
+    "peer": "^0.5.3"
+  },
+  "devDependencies": {
+    "pkg": "^4.4.9"
+  }
+}

@@ -1,0 +1,30 @@
+.controlWrapper {
+  padding-top: 50px;
+  pointer-events: all;
+}
+
+.quickContainer {
+  position: fixed;
+  bottom: 0;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quickButton {
+  pointer-events: auto;
+  margin: 4px;
+  cursor: pointer;
+}
+
+.quickButton .spriteImage {
+  border: 0;
+  background: rgba(0,0,0,0) !important;
+  pointer-events: none;
+}
+
+.quickButton:hover {
+  margin: 2px;
+  border: 2px solid orangered;
+}

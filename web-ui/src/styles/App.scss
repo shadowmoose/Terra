@@ -1,0 +1,36 @@
+html, body {
+  width:  100%;
+  height: 100%;
+  margin: 0;
+  touch-action: none;
+  background-color: #3b3b3b;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+
+.App {
+  position: absolute; // Important to set, so that the React component stays over the Canvas.
+  text-align: center;
+  color: cornflowerblue;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.noMouse {
+  pointer-events: none;
+}
+
+.useMouse {
+  pointer-events: auto;
+}
+
+.menu_button {
+  margin-right: 25px
+}

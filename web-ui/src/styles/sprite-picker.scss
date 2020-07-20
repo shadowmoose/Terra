@@ -1,0 +1,16 @@
+
+.spriteImage {
+  margin: 3px;
+  cursor: pointer;
+  border: 1px solid black;
+}
+
+.spriteImage:hover {
+  margin: 2px;
+  border: 2px solid orangered;
+}
+
+.spriteImage.selected {
+  margin: 2px;
+  border: 2px solid #eaac31;
+}

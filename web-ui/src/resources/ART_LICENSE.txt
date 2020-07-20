@@ -1,0 +1,12 @@
+The art used by this program comes from many locations,
+but a primary soruce is from (licensed) ORYX sprite packs.
+
+While the non-ORYX sprites fall under public domain,
+the rest fall under this license agreement: https://www.oryxdesignlab.com/license
+
+In order to respect the creator's wishes, the public-facing spritesheet has been obfuscated.
+If you're interested in using the artwork seen here, please consult the license site above for purchasing information.
+Support the artists who dedicate their time to making these images for us!
+
+Thanks,
+   ShadowMoose
