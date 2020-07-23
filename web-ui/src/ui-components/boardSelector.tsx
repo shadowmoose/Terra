@@ -1,6 +1,6 @@
 import React from "react";
 import {observer} from "mobx-react-lite";
-import {Button, Fab, IconButton, MenuItem, MenuList, Popover, Tooltip, Typography} from "@material-ui/core";
+import {Button, Fab, MenuItem, MenuList, Popover, Tooltip, Typography} from "@material-ui/core";
 import MapIcon from '@material-ui/icons/Map';
 import GameController from "../game/controllers/game";
 import {netMode, NetworkMode} from "../game/net/peerconnection";
@@ -25,11 +25,11 @@ export const BoardSelector = observer((props: {controller: GameController}) => {
             <Fab
                 variant="extended"
                 onClick={(evt: any)=>{setAnchorEl(evt.currentTarget)}}
-                style={{width: '300px', overflowX: 'hidden', marginTop: '5px'}}
+                style={{width: '200px', overflowX: 'hidden', marginTop: '5px'}}
             >
                 <MapIcon style={{marginRight: '5px'}}/>
                 <Typography variant="inherit" noWrap>
-                    {campaign?.loadedBoard ? campaign.loadedBoard : 'New Board'}
+                    {campaign?.loadedBoard ? campaign.loadedBoard : '[Untitled Board]'}
                 </Typography>
             </Fab>
         </Tooltip>
@@ -46,12 +46,12 @@ export const BoardSelector = observer((props: {controller: GameController}) => {
                 horizontal: 'center',
             }}
         >
-            <BoardControlMenu campaign={campaign}/>
+            <BoardControlMenu campaign={campaign} controller={props.controller}/>
         </Popover>
     </div>
 });
 
-export const BoardControlMenu = (props: {campaign: Campaign}) => {
+export const BoardControlMenu = (props: {controller: GameController, campaign: Campaign}) => {
     const [selected, setSelected] = React.useState(props.campaign.loadedBoard);
 
     const handleSelected = (board: string) => {
@@ -71,9 +71,9 @@ export const BoardControlMenu = (props: {campaign: Campaign}) => {
             <BoardSelectMenu campaign={props.campaign} onSelect={handleSelected}/>
         </FormGroup>
         <FormGroup row>
-            <BoardLoadButton campaign={props.campaign} selected={selected} setSelected={setSelected} />
+            <BoardLoadButton controller={props.controller} selected={selected} setSelected={setSelected} />
             <BoardDeleteButton campaign={props.campaign} selected={selected} setSelected={setSelected} />
-            <BoardCreateButton campaign={props.campaign} selected={selected} setSelected={setSelected} />
+            <BoardCreateButton controller={props.controller} campaign={props.campaign} selected={selected} setSelected={setSelected} />
         </FormGroup>
     </form>
 }
@@ -103,14 +103,13 @@ export const BoardSelectMenu = observer((props: {campaign: Campaign, onSelect: F
     </MenuList>;
 });
 
-export const BoardLoadButton = (props: {campaign: Campaign, selected: string|null, setSelected: Function}) => {
+export const BoardLoadButton = (props: {controller: GameController, selected: string|null, setSelected: Function}) => {
     return <Button
         color="primary"
-        disabled={props.campaign.loadedBoard === props.selected}
+        disabled={props.controller.campaign?.loadedBoard === props.selected}
         onClick={() => {
             if (props.selected) {
-                props.campaign.loadedBoard = props.selected;
-                loadBoard(props.campaign, props.selected);
+                props.controller.loadBoard(props.selected).then();
             }
         }}
     >
@@ -142,7 +141,7 @@ export const BoardDeleteButton = (props: {campaign: Campaign, selected: string|n
     </Button>
 };
 
-export const BoardCreateButton = (props: {campaign: Campaign, selected: string|null, setSelected: Function}) => {
+export const BoardCreateButton = (props: {controller: GameController, campaign: Campaign, selected: string|null, setSelected: Function}) => {
     const [needPrompt, setPrompt] = React.useState(false);
     const handleCreate = (name: string) => {
         setPrompt(false);
@@ -152,7 +151,7 @@ export const BoardCreateButton = (props: {campaign: Campaign, selected: string|n
         if (name && name.trim().length) {
             props.campaign.boards.push(name);
             props.setSelected(name);
-            loadBoard(props.campaign, name);
+            props.controller.loadBoard(name).then();
         }
     }
 
@@ -176,9 +175,3 @@ export const BoardCreateButton = (props: {campaign: Campaign, selected: string|n
         />
     </div>
 };
-
-
-function loadBoard(campaign: Campaign, name: string) {
-    campaign.loadedBoard = name;
-    // TODO: Load here.
-}

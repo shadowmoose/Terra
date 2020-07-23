@@ -11,7 +11,7 @@ class UserDB extends Dexie {
     users: Dexie.Table<any, UserData>;
 
     constructor() {
-        super('user-data');
+        super('user-db');
 
         // Define tables and indexes
         this.version(1).stores({

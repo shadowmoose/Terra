@@ -22,7 +22,7 @@ export default function LoginHelper (props: {controller: GameController}) {
     const setHosting = (hosting: boolean) => {
         setPrompt(false);
         if (hosting) {
-            return props.controller.initHost();
+            return props.controller.startHost();
         } else {
            setNeedClient(true);
         }
@@ -36,7 +36,7 @@ export default function LoginHelper (props: {controller: GameController}) {
             body={'Enter the ID of the host lobby you\'d like to join'}
             tooltip={'Host ID'}
             onCancel={() => {setNeedClient(false); setPrompt(true)}}
-            onSubmit={(txt: string) => props.controller.initClient(txt)}
+            onSubmit={(txt: string) => props.controller.startClient(txt)}
         />
     </div>
 }

@@ -10,7 +10,6 @@ import {Tile} from "../../data/interfaces/tile";
 
 
 export default class TerrainAddHandler extends Handler {
-    private static timeout: any = null;
     private static tiles: Tile[][] = [];
     readonly packets: typeof ProtoWrapper[] = [TerrainAddPacket];
     private readonly terrain: Terrain;
@@ -18,8 +17,13 @@ export default class TerrainAddHandler extends Handler {
     constructor(terrain: Terrain) {
         super();
         this.terrain = terrain;
+    }
 
-        TerrainAddHandler.broadcastChanges().then();
+    static pollChanges() {
+        setTimeout(async () => {
+            await TerrainAddHandler.broadcastChanges();
+            TerrainAddHandler.pollChanges()
+        }, 200);
     }
 
     async clientHandler(client: Client, packet: TerrainAddPacket): Promise<void> {
@@ -33,7 +37,7 @@ export default class TerrainAddHandler extends Handler {
                     const dt = stack[i];
                     const sp = data.sprites[dt.spriteIdx];
                     const t = new Tile(new Sprite(sp.id, sp.idx));
-                    this.terrain.placeAt(dt.x, dt.y, t, i === stack.length-1);
+                    this.terrain.placeAt(dt.x, dt.y, t, i === stack.length-1, false);
                 }
             }
         }
@@ -46,21 +50,16 @@ export default class TerrainAddHandler extends Handler {
     static async broadcastChanges() {
         if (TerrainAddHandler.tiles.length) {
             const packedStacks: ProtoTileStack[] = []
+            const updateTiles = TerrainAddHandler.tiles.splice(0, TerrainAddHandler.tiles.length);
 
-            for (let i=TerrainAddHandler.tiles.length-1; i>-1; i--) {
-                const t = TerrainAddHandler.tiles[i];
-                TerrainAddHandler.tiles.splice(i, 1);
+            for (const t of updateTiles) {
                 packedStacks.push(await packer.packTiles(t));
             }
 
-            broadcast(new TerrainAddPacket().assign({
+            await broadcast(new TerrainAddPacket().assign({
                 tileStacks: packedStacks
             }), true);
         }
-
-        TerrainAddHandler.timeout = setTimeout(async () => {
-            await TerrainAddHandler.broadcastChanges();
-        }, 200);
     }
 
     static sendTerrainAdd(tiles: Tile[]) {
@@ -68,3 +67,4 @@ export default class TerrainAddHandler extends Handler {
     }
 }
 
+TerrainAddHandler.pollChanges();

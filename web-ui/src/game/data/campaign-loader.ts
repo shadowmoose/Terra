@@ -1,5 +1,7 @@
 import {getAllCampaigns, getCampaign, saveCampaign, createCampaign} from "../db/campaign-db";
+import * as boardDB from '../db/board-db';
 import Campaign from "../controllers/campaign";
+
 
 export default class CampaignLoader {
     /**
@@ -13,8 +15,12 @@ export default class CampaignLoader {
      * Load a Campaign object from the db, using its unique ID.
      * @param id
      */
-    public static async loadCampaign(id: number): Promise<Campaign> {
-        return getCampaign(id);
+    public static async loadCampaign(id: number): Promise<Campaign|null> {
+        const campaign = await getCampaign(id);
+
+        if (campaign) campaign.boards = await boardDB.getAvailable(id)
+
+        return campaign;
     }
 
     /**
@@ -25,6 +31,9 @@ export default class CampaignLoader {
         return saveCampaign({
             ...camp,
             boards: Array.from(camp.boards)
+        }).catch(err => {
+            console.error(err)
+            return -1;
         });
     }
 

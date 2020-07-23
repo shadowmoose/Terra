@@ -17,6 +17,7 @@ import * as metadata from './game/db/metadata-db';
 import {InputDialog} from "./ui-components/loginHelper";
 import {CampaignSelector} from "./ui-components/campaignSelector";
 import {BoardSelector} from "./ui-components/boardSelector";
+import {BoardSaveButton} from "./ui-components/boardSaveButton";
 
 
 if (!('PointerEvent' in window)) {
@@ -92,6 +93,7 @@ const App = observer(() => {
                 }}>
                     <CampaignSelector controller={controller}/>
                     <BoardSelector controller={controller}/>
+                    <BoardSaveButton controller={controller} />
                 </div>
 
                 {content}

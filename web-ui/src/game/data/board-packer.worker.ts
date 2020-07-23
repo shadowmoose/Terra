@@ -2,8 +2,6 @@ import {ProtoBoard, ProtoTile, ProtoTileStack} from "./protobufs/proto-tiles";
 import {Sprite} from "../util/sprite-loading";
 import {Tile} from "./interfaces/tile";
 import {ProtoSprite} from "./protobufs/proto-sprite";
-import {ProtoEntity} from "./protobufs/proto-entity";
-import {Entity} from "../controllers/entities";
 
 
 /**

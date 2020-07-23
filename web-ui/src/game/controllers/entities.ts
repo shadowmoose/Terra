@@ -1,7 +1,6 @@
 import {Sprite} from "../util/sprite-loading";
 import {imageHeightPx, imageWidthPx} from "../consts";
 import {v4 as uuid} from 'uuid';
-import Middleware from "../middleware/middleware";
 import EntityMiddleware from "../middleware/entity-events";
 import {observable} from "mobx";
 import {isHost} from "../net/peerconnection";
@@ -31,7 +30,7 @@ export class Entity {
 
    canMove() {
         return isHost() || this.owners.includes(currentUsername.get());
-    }
+   }
 }
 
 export class NamePlate {
@@ -113,7 +112,7 @@ export class EntityEle {
     public readonly ele = document.createElement('canvas');
     public readonly namePlate: NamePlate;
     public readonly entity: Entity;
-    private timer: any = null;
+    private redrawTimer: any = null;
     private readonly ctx: CanvasRenderingContext2D;
     private readonly parent: HTMLElement;
     private readonly onClick: Function;
@@ -133,21 +132,22 @@ export class EntityEle {
 
         this.namePlate = new NamePlate(entity.name, entity.color, plateParent);
 
+        this.ele.style.opacity = this.entity.visible ? '1' : '0.5';
         this.reposition();
         this.bringToFront();
         this.redraw();
     }
 
-    update(props: Partial<Entity>) {
+    internalUpdate(props: Partial<Entity>) {
         Object.assign(this.entity, props);
         this.ele.style.opacity = this.entity.visible ? '1' : '0.5';
         this.reposition();
-        if (this.timer === null) this.redraw()
+        if (this.redrawTimer === null) this.redraw()
     }
 
     remove() {
-        if (this.timer !== null) {
-            clearTimeout(this.timer);
+        if (this.redrawTimer !== null) {
+            clearTimeout(this.redrawTimer);
         }
         this.ele.remove();
         this.namePlate.remove();
@@ -158,14 +158,14 @@ export class EntityEle {
             this.ctx.clearRect(0, 0, this.ele.width, this.ele.height);
             this.entity.sprite.drawTo(this.ctx, 0, 0);
 
-            if (this.timer !== null) {
-                clearTimeout(this.timer);
-                this.timer = null;
+            if (this.redrawTimer !== null) {
+                clearTimeout(this.redrawTimer);
+                this.redrawTimer = null;
             }
             if (this.entity.sprite.animated) {
-                this.timer = setTimeout(this.redraw.bind(this), 200);
+                this.redrawTimer = setTimeout(this.redraw.bind(this), 200);
             } else {
-                this.timer = null;
+                this.redrawTimer = null;
             }
         });
     }
@@ -206,6 +206,7 @@ export default class EntityLayer {
     public boardHeight: number = 0;
     private enableInput: boolean = true;
     @observable public selected: EntityEle|null = null;
+    @observable public isDirty: boolean = false;
     private middleware: EntityMiddleware;
 
     constructor(tileWidth: number, tileHeight: number) {
@@ -256,7 +257,10 @@ export default class EntityLayer {
         entEle.setInput(this.enableInput);
         this.entityElements[ent.id] = entEle;
 
-        if (sendUpdate) EntityUpdateHandler.sendUpdate(ent);
+        if (sendUpdate) {
+            EntityUpdateHandler.sendUpdate(ent);
+            this.isDirty = true;
+        }
 
         // Upon creation, we need a frame for the bounding box to update with the new name:
         if (NamePlate.updateTimer !== null) clearTimeout(NamePlate.updateTimer);
@@ -287,8 +291,11 @@ export default class EntityLayer {
     public updateEntity(id: string, props: Partial<Entity>, sendUpdate: boolean=true) {
         const existing = this.entityElements[id];
         if (existing) {
-            existing.update(props);
-            if (sendUpdate) EntityUpdateHandler.sendUpdate(existing.entity);
+            existing.internalUpdate(props);
+            if (sendUpdate) {
+                EntityUpdateHandler.sendUpdate(existing.entity);
+                this.isDirty = true;
+            }
         }
         return !!existing;
     }
@@ -312,19 +319,8 @@ export default class EntityLayer {
         return Object.values(this.entityElements).map(e => e.entity);
     }
 
-    /**
-     * Import a serialized tile map, over the current data.
-     */
-    setEntityList(entities: Entity[]) {
-        // TODO: Implement.
-    }
-
     public appendTo(ele: HTMLDivElement) {
         ele.append(this.ele);
         ele.append(this.plateEle)
-    }
-
-    public registerMiddleware(mdl: Middleware) {
-        mdl.attach(this.ele);
     }
 }

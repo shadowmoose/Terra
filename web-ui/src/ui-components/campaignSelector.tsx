@@ -28,6 +28,18 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
     const [campaignList, setList] = React.useState<Campaign[]>([]);
     const [storage, setStorage] = React.useState({q: 1, u: 0});
 
+
+    const selectCampaign = React.useMemo(() => {
+        return (camp: Campaign) => {
+            setNeed(false);
+            props.controller.campaign = camp;
+            Metadata.setCurrentCampaign(camp.id).then();
+            if (props.controller.campaign.loadedBoard) {
+                props.controller.loadBoard(props.controller.campaign.loadedBoard).then();
+            }
+        }
+    }, [props.controller]);
+
     React.useMemo(() => {
         // Check initially to see if we already have a username stored:
         Metadata.getCurrentCampaign().then(async id => {
@@ -35,8 +47,7 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
             console.debug('Current campaign:', id);
             const camp = await CampaignLoader.loadCampaign(id);
             if (!camp) return;
-            props.controller.campaign = camp;
-            setNeed(false);
+            selectCampaign(camp);
         });
 
         // Load all available campaigns:
@@ -48,7 +59,7 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
             const q = estimate.quota
             if (u !== undefined && q !== undefined) setStorage({ q, u});
         });
-    }, [props.controller]);
+    }, [selectCampaign]);
 
     const addCampaign = async (name: string) => {
         setPromptNew(false);
@@ -56,12 +67,6 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
             const c = await CampaignLoader.createCampaign(name);
             setList([...campaignList, c]);
         }
-    }
-
-    const selectCampaign = (camp: Campaign) => {
-        setNeed(false);
-        props.controller.campaign = camp;
-        Metadata.setCurrentCampaign(camp.id).then();
     }
 
     const handleModalClose = () => {
