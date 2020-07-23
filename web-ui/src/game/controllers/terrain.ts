@@ -14,6 +14,7 @@ export default class Terrain extends Canvas {
     public boardHeight: number = 0;
     public tileIDX: number = 0; // Simple counter to track terrain in the order they were placed.
     @observable public selectedSprite: Sprite | null = null;
+    @observable public isBoardDirty: boolean = false;
 
     constructor(width: number, height: number) {
         super('terrain');
@@ -55,6 +56,7 @@ export default class Terrain extends Canvas {
     public eraseAt(x: number, y: number) {
         if (this.removeAt(x, y, true)) {
             TerrainEraseHandler.sendTerrainRemove(x, y);
+            if (!this.isBoardDirty) this.isBoardDirty = true;
         }
     }
 
@@ -65,8 +67,9 @@ export default class Terrain extends Canvas {
      * @param y
      * @param tile
      * @param redraw
+     * @param broadcast
      */
-    public placeAt(x: number, y: number, tile: Tile, redraw: boolean = true): boolean {
+    public placeAt(x: number, y: number, tile: Tile, redraw: boolean = true, broadcast: boolean = false): boolean {
         const existing = this.getAt(x, y);
         if (existing.length && existing[existing.length-1].sprite.composite === tile.sprite.composite) {
             // The given sprite is already at the top of the stack; Skip adding because it won't do anything.
@@ -82,7 +85,8 @@ export default class Terrain extends Canvas {
         tile.y = y;
         tile.z = this.tileIDX++;
         if (redraw) this.redrawAt(x, y);
-        TerrainAddHandler.sendTerrainAdd(this.terrain[k]);
+        if (broadcast) TerrainAddHandler.sendTerrainAdd(this.terrain[k]);
+        if (!this.isBoardDirty) this.isBoardDirty = true;
         return true;
     }
 
@@ -96,7 +100,7 @@ export default class Terrain extends Canvas {
             return false;
         }
         if (this.selectedSprite) {
-            return this.placeAt(x, y, new Tile(this.selectedSprite));
+            return this.placeAt(x, y, new Tile(this.selectedSprite), true, true);
         }
         return false;
     }
@@ -136,7 +140,7 @@ export default class Terrain extends Canvas {
 
         for (const k of newTerrain.terrain.tiles.sort((a, b) => a.z - b.z)) {
             const sp = newTerrain.terrain.sprites[k.spriteIdx];
-            this.placeAt(k.x, k.y, new Tile(new Sprite(sp.id, sp.idx)), false);
+            this.placeAt(k.x, k.y, new Tile(new Sprite(sp.id, sp.idx)), false, false);
         }
         for (const k of Object.keys(this.terrain)) {
             this.redrawAt(this.terrain[k][0].x, this.terrain[k][0].y)

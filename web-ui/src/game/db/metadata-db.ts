@@ -7,7 +7,7 @@ enum Cats {
     CERT = 'cert',
     USER = 'user'
 }
-
+//TODO: More generic metadata system, for settings.
 class MetaDB extends Dexie {
     data: Dexie.Table<any, string>;
 
@@ -15,7 +15,7 @@ class MetaDB extends Dexie {
         super("metadata");
 
         // Define tables and indexes
-        this.version(1).stores({
+        this.version(2).stores({
             data: '&[catType+dexKey]'
         });
         this.data = this.table("data");

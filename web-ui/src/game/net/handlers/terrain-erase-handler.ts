@@ -12,8 +12,13 @@ export default class TerrainEraseHandler extends Handler {
     constructor(terrain: Terrain) {
         super();
         this.terrain = terrain;
+    }
 
-        TerrainEraseHandler.broadcastChanges().then();
+    static pollChanges() {
+        setTimeout(async () => {
+            await TerrainEraseHandler.broadcastChanges();
+            TerrainEraseHandler.pollChanges()
+        }, 200);
     }
 
     async clientHandler(client: Client, packet: TerrainErasePacket): Promise<void> {
@@ -26,10 +31,18 @@ export default class TerrainEraseHandler extends Handler {
         throw Error('Client attempted to erase terrain. Not allowed.')
     }
 
+    /**
+     * Batches the removed terrain coords, to be sent shortly after.
+     * @param x
+     * @param y
+     */
     static sendTerrainRemove(x: number, y: number) {
         if (isHost()) TerrainEraseHandler.tiles.add(new TerrainCoordPacket().assign({ x, y}));
     }
 
+    /**
+     * Sends all the batched changes. Runs on a loop. Can be called manually to instantly send all changes.
+     */
     static async broadcastChanges() {
         if (TerrainEraseHandler.tiles.size) {
             const tep  = new TerrainErasePacket().assign({
@@ -38,6 +51,7 @@ export default class TerrainEraseHandler extends Handler {
             TerrainEraseHandler.tiles.clear();
             await broadcast(tep, true);
         }
-        setTimeout(TerrainEraseHandler.broadcastChanges, 250);
     }
 }
+
+TerrainEraseHandler.pollChanges();

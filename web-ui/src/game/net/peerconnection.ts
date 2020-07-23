@@ -214,6 +214,7 @@ export class Client {
 
         this.pingTimer = setInterval(() => {
             if (!this.verified) return;
+            if (!this.conn.open) return this.close();
             if (!this.lastPing) {
                 this.lastPing = Date.now();
                 return;
@@ -314,13 +315,13 @@ export class Client {
  * @param packet
  * @param requireHost
  */
-export function broadcast(packet: ProtoWrapper, requireHost: boolean) {
+export async function broadcast(packet: ProtoWrapper, requireHost: boolean) {
     if (requireHost && netMode.get() !== NetworkMode.HOST) {
         return;
     }
-    encoder.encode(packet).then(data => {
-        clients.forEach(c => c.sendBuffer(data));
-    });
+    const data = await encoder.encode(packet)
+
+    clients.forEach(c => c.sendBuffer(data));
 }
 
 export function isHost() {
