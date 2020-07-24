@@ -35,10 +35,11 @@ jobs:
           cd web-ui
           npm run build
           mv build unstable
-          mkdir build/unstable
+          mkdir -p build/unstable
           mv unstable build/unstable
         env:
           CI: ""
+          PUBLIC_URL:
 
       - name: Deploy to Unstable Directory
         uses: peaceiris/actions-gh-pages@v3
