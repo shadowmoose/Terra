@@ -2,4 +2,12 @@
 
 2D Tabletop sprite-based world editor. WIP.
 
-https://shadowmoose.github.io/Terra/
+
+This project is currently under heavy development. 
+Until it is officially deployed to a "real" URL, you can find resources at the below locations:
+
+__Latest Master Build:__ https://shadowmoose.github.io/Terra/
+
+__Project Status:__ https://github.com/shadowmoose/Terra/projects/1
+
+__More Info:__ https://github.com/shadowmoose/Terra/wiki
