@@ -17,8 +17,8 @@ import {
     MenuItem,
     Tooltip
 } from "@material-ui/core";
-import {InputDialog} from "./loginHelper";
 import {netMode, NetworkMode} from "../game/net/peerconnection";
+import {InputDialog} from "./prompts";
 
 
 export const CampaignSelector = observer((props: {controller: GameController}) => {

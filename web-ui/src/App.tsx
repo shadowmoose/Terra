@@ -14,10 +14,10 @@ import * as connection from "./game/net/peerconnection";
 import {NetworkMode} from "./game/net/peerconnection";
 import {SnackbarUtilsConfigurator} from "./ui-components/notifications";
 import * as metadata from './game/db/metadata-db';
-import {InputDialog} from "./ui-components/loginHelper";
 import {CampaignSelector} from "./ui-components/campaignSelector";
 import {BoardSelector} from "./ui-components/boardSelector";
 import {BoardSaveButton} from "./ui-components/boardSaveButton";
+import {InputDialog} from "./ui-components/prompts";
 
 
 if (!('PointerEvent' in window)) {

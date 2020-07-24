@@ -181,4 +181,23 @@ export default class GameController {
 
         return true;
     }
+
+    public async deleteBoard(campaign: Campaign, name: string): Promise<boolean> {
+        const idx = campaign.boards.indexOf(name);
+
+        if (idx < 0) {
+            return false;
+        }
+
+        campaign.boards.splice(idx, 1);
+
+        if (campaign.loadedBoard === name) {
+            campaign.loadedBoard = null;
+        }
+
+        await boardDB.deleteBoard(campaign.id, name);
+        await CampaignLoader.saveCampaign(campaign);
+
+        return true;
+    }
 }

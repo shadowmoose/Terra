@@ -7,7 +7,7 @@ import {netMode, NetworkMode} from "../game/net/peerconnection";
 import Campaign from "../game/controllers/campaign";
 import FormGroup from "@material-ui/core/FormGroup";
 import notifications from './notifications';
-import {InputDialog} from "./loginHelper";
+import ConfirmPrompt, {InputDialog} from "./prompts";
 
 
 
@@ -72,7 +72,7 @@ export const BoardControlMenu = (props: {controller: GameController, campaign: C
         </FormGroup>
         <FormGroup row>
             <BoardLoadButton controller={props.controller} selected={selected} setSelected={setSelected} />
-            <BoardDeleteButton campaign={props.campaign} selected={selected} setSelected={setSelected} />
+            <BoardDeleteButton controller={props.controller} campaign={props.campaign} selected={selected} setSelected={setSelected} />
             <BoardCreateButton controller={props.controller} campaign={props.campaign} selected={selected} setSelected={setSelected} />
         </FormGroup>
     </form>
@@ -117,31 +117,48 @@ export const BoardLoadButton = (props: {controller: GameController, selected: st
     </Button>
 };
 
-export const BoardDeleteButton = (props: {campaign: Campaign, selected: string|null, setSelected: Function}) => {
-    return <Button
-        disabled={!props.selected}
-        color="secondary"
-        onClick={() => {
-            // TODO: Prompt to verify.
-            // TODO: Actually Delete.
-            if (!props.selected) return;
+export const BoardDeleteButton = (props: {
+    controller: GameController,
+    campaign: Campaign,
+    selected: string|null,
+    setSelected: Function
+}) => {
+    const [confirm, needConfirm] = React.useState(false);
 
-            const idx = props.campaign.boards.indexOf(props.selected);
-
-            if (idx >= 0) {
-                props.campaign.boards.splice(idx, 1);
-            }
-            if (props.campaign.loadedBoard === props.selected) {
-                props.campaign.loadedBoard = null;
-            }
-            props.setSelected(null);
-        }}
-    >
-        Delete
-    </Button>
+    return <div>
+        <Button
+            disabled={!props.selected}
+            color="secondary"
+            onClick={() => {needConfirm(true)}}
+        >
+            Delete
+        </Button>
+        <ConfirmPrompt
+            open={confirm}
+            onCancel={() => {needConfirm(false)}}
+            onConfirm={() => {
+                if (props.selected) {
+                    props.controller.deleteBoard(props.campaign, props.selected).catch(err => {
+                        notifications.error('Failed to delete board!');
+                        console.error(err);
+                    });
+                    props.setSelected(null);
+                    needConfirm(false);
+                }
+            }}
+            title={'Really delete?'}
+            prompt={`Are you sure you want to delete the board "${props.selected}"?`}
+            confirmButton={'Delete'}
+        />
+    </div>
 };
 
-export const BoardCreateButton = (props: {controller: GameController, campaign: Campaign, selected: string|null, setSelected: Function}) => {
+export const BoardCreateButton = (props: {
+    controller: GameController,
+    campaign: Campaign,
+    selected: string|null,
+    setSelected: Function
+}) => {
     const [needPrompt, setPrompt] = React.useState(false);
     const handleCreate = (name: string) => {
         setPrompt(false);
