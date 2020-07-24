@@ -1,4 +1,5 @@
-# Terra
+# Terra 
+![Latest Release](https://github.com/shadowmoose/Terra/workflows/Build%20UI/badge.svg) ![Unstable Build](https://github.com/shadowmoose/Terra/workflows/Build%20Unstable/badge.svg)
 
 2D Tabletop sprite-based world editor. WIP.
 
