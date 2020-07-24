@@ -18,7 +18,11 @@ export default class CampaignLoader {
     public static async loadCampaign(id: number): Promise<Campaign|null> {
         const campaign = await getCampaign(id);
 
-        if (campaign) campaign.boards = await boardDB.getAvailable(id)
+        if (campaign) campaign.boards = await boardDB.getAvailable(id);
+
+        if (campaign && campaign.loadedBoard && !campaign.boards.includes(campaign.loadedBoard)) {
+            campaign.loadedBoard = null;
+        }
 
         return campaign;
     }

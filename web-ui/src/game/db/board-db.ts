@@ -18,7 +18,7 @@ class BoardDB extends Dexie {
 
         // Define tables and indexes
         this.version(1).stores({
-            boards: 'campaignID, name'
+            boards: '&[campaignID+name]'
         });
         this.boards = this.table("boards");
     }
@@ -52,10 +52,15 @@ export async function load(campaignID: number, name: string): Promise<null|Proto
 
 export async function getAvailable(campaignID: number): Promise<string[]> {
     try {
-        return (await db.boards.where({campaignID}).toArray()).map(b=>b.name);
+        return (await db.boards.where('[campaignID+name]').between([campaignID, Dexie.minKey], [campaignID, Dexie.maxKey]).toArray()).map(b=>b.name);
     } catch(err) {
         notifications.error('Error fetching available boards!');
         console.error(err);
         return [];
     }
+}
+
+
+export async function deleteBoard(campaignID: number, name: string) {
+    return db.boards.where({campaignID, name}).delete();
 }

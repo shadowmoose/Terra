@@ -1,14 +1,7 @@
 import React from "react";
 import GameController from "../game/controllers/game";
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    TextField
-} from "@material-ui/core";
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@material-ui/core";
+import {InputDialog} from "./prompts";
 
 /**
  * Helper UI to prompt the user for their connection action, if no Room ID hashcode is set.
@@ -60,55 +53,4 @@ function PromptNetwork (props: {select: Function}) {
             </Button>
         </DialogActions>
     </Dialog>
-}
-
-
-export function InputDialog(props: {
-    open: boolean
-    title: string,
-    body: string,
-    tooltip: string,
-    onSubmit: Function,
-    onCancel: Function,
-    acceptText?: string
-}) {
-    const [text, setText] = React.useState('');
-
-    const handleClose = () => {
-        props.onCancel();
-    };
-    const handleText = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setText(event.target.value);
-    }
-
-    return (
-        <div>
-            <Dialog open={props.open} onClose={handleClose} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">{props.title}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {props.body}
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label={props.tooltip}
-                        type="text"
-                        fullWidth
-                        value={text}
-                        onChange={handleText}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => {handleClose(); props.onCancel()}} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={() => {props.onSubmit(text); setText('')}} color="primary">
-                        {props.acceptText || 'Connect'}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </div>
-    );
 }
