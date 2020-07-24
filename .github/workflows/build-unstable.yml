@@ -34,7 +34,9 @@ jobs:
         run: |
           cd web-ui
           npm run build
-          mv build/* build/unstable
+          mv build unstable
+          mkdir build/unstable
+          mv unstable build/unstable
         env:
           CI: ""
 
