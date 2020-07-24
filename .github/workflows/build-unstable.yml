@@ -39,7 +39,7 @@ jobs:
           mv unstable build/unstable
         env:
           CI: ""
-          PUBLIC_URL:
+          PUBLIC_URL: "https://shadowmoose.github.io/Terra/unstable"
 
       - name: Deploy to Unstable Directory
         uses: peaceiris/actions-gh-pages@v3
