@@ -36,7 +36,7 @@ jobs:
           npm run build
           mv build unstable
           mkdir -p build/unstable
-          mv unstable build/unstable
+          mv unstable build
         env:
           CI: ""
           PUBLIC_URL: "https://shadowmoose.github.io/Terra/unstable"
