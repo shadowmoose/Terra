@@ -1,12 +1,11 @@
 import React from 'react';
 import '../styles/yt-player-style.scss';
 import YouTube from 'react-youtube';
-import {broadcast, netMode, NetworkMode} from "../game/net/peerconnection";
+import {broadcast, netMode, NetworkMode, isHost} from "../game/net/peerconnection";
 import YouTubeIcon from '@material-ui/icons/YouTube';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import {Button, Fab, IconButton, Tooltip} from "@material-ui/core";
-import {MediaStatusPacket} from "../game/net/packets/media-packets";
-import GameController from "../game/controllers/game";
+import {MediaRequestPacket, MediaStatusPacket} from "../game/net/packets/media-packets";
 import {observer} from "mobx-react-lite";
 import {InputDialog} from "./prompts";
 import {observable} from "mobx";
@@ -36,8 +35,34 @@ function saveConf() {
     metadata.store(Meta.PLAYER_CONFIG, config).catch(console.error);
 }
 
+/**
+ * The current player. There should only ever be one at a time. May be null until initialized.
+ */
+export let player: any = null;
 
-export const YoutubePlayerInterface = observer((props: {controller: GameController}) => {
+/**
+ * Get a summary of the currently-playing media, if any is available.
+ */
+export const getPlayerStatus = (): Partial<MediaStatusPacket>|null => {
+    if (!player) return null;
+
+    const currentVideo: string = player.getVideoData().video_id;
+    const currentTime: number = Math.floor(player.getCurrentTime());
+    const playbackRate: number = player.getPlaybackRate();
+    const paused: boolean = player.getPlayerState() === YouTube.PlayerState.PAUSED;
+
+    if (!currentVideo) return null;
+
+    return {
+        currentVideo,
+        currentTime,
+        playbackRate,
+        paused
+    }
+};
+
+
+export const YoutubePlayerInterface = observer(() => {
     const [visible, setVisible] = React.useState(true);
 
     React.useMemo(() => {
@@ -48,10 +73,10 @@ export const YoutubePlayerInterface = observer((props: {controller: GameControll
         })
     }, []);
 
-    const tools = (netMode.get() === NetworkMode.HOST && props.controller.mediaPlayer) ?
+    const tools = (netMode.get() === NetworkMode.HOST && player) ?
         <div className={'ytPlayerHostToolbar'}>
-            <LoadPlaylistButton player={props.controller.mediaPlayer} />
-            <ShuffleButton player={props.controller.mediaPlayer}/>
+            <LoadPlaylistButton player={player} />
+            <ShuffleButton player={player}/>
         </div> : null;
 
     return <div style={{pointerEvents: 'auto'}} className={`ytPlayerIcon ${visible? 'visible':'hidden'}`}>
@@ -69,7 +94,6 @@ export const YoutubePlayerInterface = observer((props: {controller: GameControll
         <div className={`ytPlayerWrapper ${visible? 'visible':'hidden'}`}>
             {tools}
             <YoutubePlayer
-                controller={props.controller}
                 loop={config.loop}
                 shuffle={config.shuffle}
                 volume={config.volume}
@@ -79,57 +103,49 @@ export const YoutubePlayerInterface = observer((props: {controller: GameControll
 });
 
 
-export const YoutubePlayer = (props: {controller: GameController, loop: boolean, shuffle: boolean, volume: number}) => {
-    const [player, setPlayer] = React.useState<any>(null);
-
-    const getPlayerStatus = () => {
-        const currentVideo: string = player.getVideoData().video_id;
-        const currentTime: number = Math.floor(player.getCurrentTime());
-        const playbackRate: number = player.getPlaybackRate();
-        const paused: boolean = player.getPlayerState() === YouTube.PlayerState.PAUSED;
-
-        return {
-            currentVideo,
-            currentTime,
-            playbackRate,
-            paused
-        }
-    };
+export const YoutubePlayer = (props: {loop: boolean, shuffle: boolean, volume: number}) => {
+    const [mediaPlayer, setPlayer] = React.useState<any>(null);
 
     React.useEffect(() => {
-        if (!player) return;
+        if (!mediaPlayer) return;
 
-        props.controller.mediaPlayer = player;
-        console.debug('Set player:', player);
+        player = mediaPlayer;
+
+        if (!isHost()) broadcast(new MediaRequestPacket(), false).catch(console.error);
 
         const timer = setInterval(() => {
             // Periodically poll for a new user-set volume, and save the new result.
-            const v = player.getVolume();
-            if (player.getPlayerState() === YouTube.PlayerState.PLAYING && v !== config.volume) {
+            const v = mediaPlayer.getVolume();
+            if (mediaPlayer.getPlayerState() === YouTube.PlayerState.PLAYING && v !== config.volume) {
                 config.volume = v;
                 saveConf();
             }
         }, 15000);
 
         return () => {
-            console.debug('Cleaning player up...');
-            props.controller.mediaPlayer = null;
+            player = null;
             clearInterval(timer);
         }
-    }, [player, props.controller.mediaPlayer]);
+    }, [mediaPlayer]);
 
     const onReady = (event: any) => { // target, data
         setPlayer(event.target);
     }
 
-    const onPlay = (event: any) => {
-        console.debug('Video play:', getPlayerStatus());
-        broadcast(new MediaStatusPacket().assign(getPlayerStatus()), true).catch(console.error);
+    const onPlay = () => {
+        const stat = getPlayerStatus();
+        if (stat) {
+            console.debug('Video play:', getPlayerStatus());
+            broadcast(new MediaStatusPacket().assign(stat), true).catch(console.error);
+        }
     }
 
-    const onPause = (event: any) => {
-        console.debug('Video pause:', getPlayerStatus());
-        broadcast(new MediaStatusPacket().assign(getPlayerStatus()), true).catch(console.error);
+    const onPause = () => {
+        const stat = getPlayerStatus();
+        if (stat) {
+            console.debug('Video pause:', getPlayerStatus());
+            broadcast(new MediaStatusPacket().assign(stat), true).catch(console.error);
+        }
     }
 
     const onError = (event: any) => {
@@ -139,16 +155,16 @@ export const YoutubePlayer = (props: {controller: GameController, loop: boolean,
     const onStateChange = (event: any) => {
         /*  BUFFERING: 3, CUED: 5, ENDED: 0, PAUSED: 2, PLAYING: 1, UNSTARTED: -1 */
         if (event.data === YouTube.PlayerState.CUED) {
-            console.info('Video/Playlist Cued!', player, player.getVideoData());
+            console.info('Video/Playlist Cued!', mediaPlayer, mediaPlayer.getVideoData());
             // Reference: https://developers.google.com/youtube/iframe_api_reference#onStateChange
-            player.setLoop(props.loop);  // Loop the playlist.
-            player.setShuffle(props.shuffle); // Can be toggled to shuffle/restore order.
-            player.setVolume(props.volume); // 0-100.
+            mediaPlayer.setLoop(props.loop);  // Loop the playlist.
+            mediaPlayer.setShuffle(props.shuffle); // Can be toggled to shuffle/restore order.
+            mediaPlayer.setVolume(props.volume); // 0-100.
 
-            if (player.getPlaylist()) {
-                player.playVideoAt(0);
+            if (mediaPlayer.getPlaylist()) {
+                mediaPlayer.playVideoAt(0);
             } else {
-                player.playVideo();
+                mediaPlayer.playVideo();
             }
         }
     }
