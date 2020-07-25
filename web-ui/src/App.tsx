@@ -95,7 +95,7 @@ const App = observer(() => {
                     <CampaignSelector controller={controller}/>
                     <BoardSelector controller={controller}/>
                     <BoardSaveButton controller={controller} />
-                    <YoutubePlayerInterface controller={controller}/>
+                    <YoutubePlayerInterface />
                 </div>
 
                 {content}

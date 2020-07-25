@@ -12,3 +12,7 @@ export class MediaStatusPacket extends ProtoWrapper<MediaStatusPacket> {
     @Field.d(4, 'uint32', "required")
     public currentTime: number = 0;
 }
+
+
+@Type.d("MediaRequestPacket")
+export class MediaRequestPacket extends ProtoWrapper<MediaRequestPacket> {}

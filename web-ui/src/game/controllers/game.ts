@@ -36,7 +36,6 @@ export default class GameController {
     private readonly handlers: Handler[];
     public readonly lobby: Lobby;
     @observable public campaign: Campaign|null = null;
-    @observable public mediaPlayer: any = null;
 
     constructor() {
         this.canvasContainer = new CanvasContainer(1, 1);
