@@ -1,0 +1,28 @@
+
+.ytPlayerIcon {
+  padding-left: 10px;
+}
+
+.ytPlayerIconInner {
+  color: #d03434;
+}
+
+.ytPlayerIconInner.visible {
+  color: #7f1e1e;
+}
+
+.ytPlayerWrapper {
+  display: none;
+  position: fixed;
+  left: 50%;
+  top: 75px;
+  transform: translateX(-50%);
+}
+
+.ytPlayerWrapper {
+  background: white;
+}
+
+.ytPlayerWrapper.visible {
+  display: block;
+}

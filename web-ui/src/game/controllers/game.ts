@@ -23,6 +23,7 @@ import * as packer from "../data/board-packer.worker";
 import {ProtoEntity} from "../data/protobufs/proto-entity";
 import CampaignLoader from "../data/campaign-loader";
 import BoardReloadHandler from "../net/handlers/board-reload-handler";
+import MediaSyncHandler from "../net/handlers/media-sync-handler";
 
 
 export default class GameController {
@@ -34,6 +35,7 @@ export default class GameController {
     private readonly handlers: Handler[];
     public readonly lobby: Lobby;
     @observable public campaign: Campaign|null = null;
+    @observable public mediaPlayer: any = null;
 
     constructor() {
         this.canvasContainer = new CanvasContainer(1, 1);
@@ -51,7 +53,8 @@ export default class GameController {
             new TerrainEraseHandler(this.terrain),
             new EntityUpdateHandler(this.entities),
             new PingHandler(),
-            new BoardReloadHandler(this)
+            new BoardReloadHandler(this),
+            new MediaSyncHandler(this)
         ];
     }
 
