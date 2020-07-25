@@ -1,22 +1,12 @@
 import React from "react";
 import GameController from "../game/controllers/game";
-import * as Metadata from "../game/db/metadata-db";
+import {Meta, metadata} from "../game/db/metadata-db";
 import CampaignLoader from "../game/data/campaign-loader";
 import {observer} from "mobx-react-lite";
 import Campaign from "../game/controllers/campaign";
 import SettingsIcon from '@material-ui/icons/Settings';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Fab,
-    InputLabel,
-    Menu,
-    MenuItem,
-    Tooltip
-} from "@material-ui/core";
+import {Button, Dialog, DialogContent, DialogTitle, Fab, InputLabel, Menu, MenuItem, Tooltip} from "@material-ui/core";
 import {netMode, NetworkMode} from "../game/net/peerconnection";
 import {InputDialog} from "./prompts";
 
@@ -33,7 +23,7 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
         return (camp: Campaign) => {
             setNeed(false);
             props.controller.campaign = camp;
-            Metadata.setCurrentCampaign(camp.id).then();
+            metadata.store(Meta.CAMPAIGN_CURRENT, camp.id).then();
             if (props.controller.campaign.loadedBoard) {
                 props.controller.loadBoard(props.controller.campaign.loadedBoard).then();
             }
@@ -42,7 +32,7 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
 
     React.useMemo(() => {
         // Check initially to see if we already have a username stored:
-        Metadata.getCurrentCampaign().then(async id => {
+        metadata.get(Meta.CAMPAIGN_CURRENT).then(async (id: number) => {
             if (id === null) return;
             console.debug('Current campaign:', id);
             const camp = await CampaignLoader.loadCampaign(id);

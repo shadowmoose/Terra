@@ -24,6 +24,7 @@ import {ProtoEntity} from "../data/protobufs/proto-entity";
 import CampaignLoader from "../data/campaign-loader";
 import BoardReloadHandler from "../net/handlers/board-reload-handler";
 import MediaSyncHandler from "../net/handlers/media-sync-handler";
+import MediaSync from "../net/prechecks/media-sync";
 
 
 export default class GameController {
@@ -46,7 +47,8 @@ export default class GameController {
         // Initialize networking stuff:
         this.preChecks = [
             new HandShakeCheck(this),
-            new BoardSync(this)
+            new BoardSync(this),
+            new MediaSync(this)
         ];
         this.handlers = [
             new TerrainAddHandler(this.terrain),

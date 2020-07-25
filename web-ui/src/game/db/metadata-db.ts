@@ -3,74 +3,39 @@ import {observable} from "mobx";
 
 export const currentUsername = observable.box<string>('');
 
-enum Cats {
-    CERT = 'cert',
-    USER = 'user'
+export enum Meta {
+    CERT_BUNDLE = 'certs',
+    USERNAME = 'username',
+    CAMPAIGN_CURRENT = 'campaign_current',
+    PLAYER_CONFIG = 'player_config',
 }
-//TODO: More generic metadata system, for settings.
+
+
 class MetaDB extends Dexie {
     data: Dexie.Table<any, string>;
 
     constructor() {
-        super("metadata");
+        super("metadata-db");
 
         // Define tables and indexes
-        this.version(2).stores({
-            data: '&[catType+dexKey]'
+        this.version(1).stores({
+            data: 'id'
         });
         this.data = this.table("data");
     }
 
-    public async get(catType: string, key: string): Promise<any> {
+    public async get(id: Meta): Promise<any> {
         return JSON.parse((await this.data
-            .where({catType, dexKey: key})
+            .where({id})
             .first())?.val || 'null');
     }
 
-    public async getAll(catType: string): Promise<any[]> {
-        return (await this.data
-            .where({catType}).toArray())
-            .map(ob => JSON.parse(ob?.val))
-    }
-
-    public async store(catType: string, dexKey: string, val: any): Promise<string> {
+    public async store(id: Meta, value: any): Promise<string> {
         return this.data.put({
-            catType,
-            val: JSON.stringify(val),
-            dexKey
+            id,
+            val: JSON.stringify(value),
         });
     }
 }
 
-const db = new MetaDB();
-
-export async function getCerts(): Promise<{ pubKey: any, privKey: any }> {
-    return {
-        pubKey: await db.get(Cats.CERT, 'cert-public'),
-        privKey: await db.get(Cats.CERT,'cert-private')
-    }
-}
-
-export async function setCerts(pub: any, privateCert: any) {
-    await db.store(Cats.CERT, 'cert-public', pub);
-    await db.store(Cats.CERT, 'cert-private', privateCert);
-}
-
-export async function setUsername(username: string) {
-    currentUsername.set(username);
-    return db.store(Cats.USER, 'username', username);
-}
-
-export async function getUsername(): Promise<string> {
-    const res = await db.get(Cats.USER, 'username');
-    currentUsername.set(res);
-    return res;
-}
-
-export async function setCurrentCampaign(campaign: number) {
-    return db.store(Cats.USER, 'campaign', campaign);
-}
-
-export async function getCurrentCampaign(): Promise<number|null> {
-    return db.get(Cats.USER, 'campaign');
-}
+export const metadata = new MetaDB();

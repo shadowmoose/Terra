@@ -2,7 +2,7 @@ import {Client} from "../peerconnection";
 import {exportKeys, pack, unpack} from "../crypter";
 import {PreCheck} from "./precheck";
 import {addNewUser, checkUserCredentials, getUser, updateUser} from "../../db/user-db";
-import * as metadata from '../../db/metadata-db';
+import {Meta, metadata} from '../../db/metadata-db';
 import {ReadyPacket, SignaturePacket} from "../packets/util-packets";
 
 
@@ -22,7 +22,7 @@ export default class HandShakeCheck extends PreCheck {
 
             // Respond with client's own signed auth packet.
             const { pubKey, roomID } = await exportKeys();
-            const username = await metadata.getUsername();
+            const username = await metadata.get(Meta.USERNAME);
             const packet = new SignaturePacket().assign({
                 signedJSON: await pack({
                     pubKey,

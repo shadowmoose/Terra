@@ -9,11 +9,11 @@ import {Typography} from "@material-ui/core";
 import ControlMenu from "./ui-components/controlMenu";
 import {observer} from "mobx-react-lite";
 import ConnectionOverlay from "./ui-components/connectionOverlay";
-import { SnackbarProvider } from 'notistack';
+import {SnackbarProvider} from 'notistack';
 import * as connection from "./game/net/peerconnection";
 import {NetworkMode} from "./game/net/peerconnection";
 import {SnackbarUtilsConfigurator} from "./ui-components/notifications";
-import * as metadata from './game/db/metadata-db';
+import {Meta, metadata} from './game/db/metadata-db';
 import {CampaignSelector} from "./ui-components/campaignSelector";
 import {BoardSelector} from "./ui-components/boardSelector";
 import {BoardSaveButton} from "./ui-components/boardSaveButton";
@@ -41,7 +41,7 @@ const App = observer(() => {
     const setName = async (name: string) => {
         if (name && name.length) {
             setNeedName(false);
-            await metadata.setUsername(name);
+            await metadata.store(Meta.USERNAME, name);
             await controller.start();
         } else {
             window.location.reload();
@@ -49,7 +49,7 @@ const App = observer(() => {
     }
     React.useMemo(() => {
         // Check initially to see if we already have a username stored:
-        metadata.getUsername().then(async name => {
+        metadata.get(Meta.USERNAME).then(async (name: string) => {
             if (name && name.length) {
                setNeedName(false);
                await controller.start();
