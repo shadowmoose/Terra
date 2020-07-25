@@ -18,6 +18,7 @@ import {CampaignSelector} from "./ui-components/campaignSelector";
 import {BoardSelector} from "./ui-components/boardSelector";
 import {BoardSaveButton} from "./ui-components/boardSaveButton";
 import {InputDialog} from "./ui-components/prompts";
+import {YoutubePlayerInterface} from "./ui-components/youtubePlayer";
 
 
 if (!('PointerEvent' in window)) {
@@ -94,6 +95,7 @@ const App = observer(() => {
                     <CampaignSelector controller={controller}/>
                     <BoardSelector controller={controller}/>
                     <BoardSaveButton controller={controller} />
+                    <YoutubePlayerInterface controller={controller}/>
                 </div>
 
                 {content}
