@@ -63,7 +63,7 @@ export const getPlayerStatus = (): Partial<MediaStatusPacket>|null => {
 
 
 export const YoutubePlayerInterface = observer(() => {
-    const [visible, setVisible] = React.useState(true);
+    const [visible, setVisible] = React.useState(false);
 
     React.useMemo(() => {
         metadata.get(Meta.PLAYER_CONFIG).then(async (res: PlayerConfig|null) => {
