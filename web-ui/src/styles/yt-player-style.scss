@@ -20,9 +20,28 @@
 }
 
 .ytPlayerWrapper {
-  background: white;
+  background: rgba(245, 245, 245, 0.79);
+  border: 1px solid black;
 }
 
 .ytPlayerWrapper.visible {
+  display: block;
+}
+
+
+.ytPlayerHostToolbar {
+  display: flex;
+  flex-grow: 1;
+}
+
+.ytPlayerShuffleIcon.active {
+  color: #a4f10c;
+}
+
+.ytPlayerShuffleIcon.inactive {
+  color: gray;
+}
+
+#yt-player {
   display: block;
 }

@@ -1,14 +1,16 @@
 import React from 'react';
 import '../styles/yt-player-style.scss';
 import YouTube from 'react-youtube';
-import {broadcast, isHost, netMode, NetworkMode} from "../game/net/peerconnection";
+import {broadcast, netMode, NetworkMode} from "../game/net/peerconnection";
 import YouTubeIcon from '@material-ui/icons/YouTube';
-import {Button, Fab, Tooltip} from "@material-ui/core";
+import ShuffleIcon from '@material-ui/icons/Shuffle';
+import {Button, Fab, IconButton, Tooltip} from "@material-ui/core";
 import {MediaStatusPacket} from "../game/net/packets/media-packets";
 import GameController from "../game/controllers/game";
 import {observer} from "mobx-react-lite";
 import {InputDialog} from "./prompts";
 import {observable} from "mobx";
+import {Meta, metadata} from "../game/db/metadata-db";
 
 const PLAYER_OPTS = {
     playerVars: {
@@ -18,23 +20,38 @@ const PLAYER_OPTS = {
     },
 };
 
-const playerConfig = observable.object({
+interface PlayerConfig {
+    volume: number;
+    loop: boolean;
+    shuffle: boolean;
+}
+
+const config: PlayerConfig = observable.object({
     volume: 100,
     loop: true,
     shuffle: true
-})
+});
+
+function saveConf() {
+    metadata.store(Meta.PLAYER_CONFIG, config).catch(console.error);
+}
 
 
 export const YoutubePlayerInterface = observer((props: {controller: GameController}) => {
     const [visible, setVisible] = React.useState(true);
 
     React.useMemo(() => {
-        //TODO: Load playerConfig settings.
+        metadata.get(Meta.PLAYER_CONFIG).then(async (res: PlayerConfig|null) => {
+            if (res) {
+                Object.assign(config, res);
+            }
+        })
     }, []);
 
     const tools = (netMode.get() === NetworkMode.HOST && props.controller.mediaPlayer) ?
         <div className={'ytPlayerHostToolbar'}>
             <LoadPlaylistButton player={props.controller.mediaPlayer} />
+            <ShuffleButton player={props.controller.mediaPlayer}/>
         </div> : null;
 
     return <div style={{pointerEvents: 'auto'}} className={`ytPlayerIcon ${visible? 'visible':'hidden'}`}>
@@ -53,9 +70,9 @@ export const YoutubePlayerInterface = observer((props: {controller: GameControll
             {tools}
             <YoutubePlayer
                 controller={props.controller}
-                loop={playerConfig.loop}
-                shuffle={playerConfig.shuffle}
-                volume={playerConfig.volume}
+                loop={config.loop}
+                shuffle={config.shuffle}
+                volume={config.volume}
             />
         </div>
     </div>;
@@ -85,9 +102,19 @@ export const YoutubePlayer = (props: {controller: GameController, loop: boolean,
         props.controller.mediaPlayer = player;
         console.debug('Set player:', player);
 
+        const timer = setInterval(() => {
+            // Periodically poll for a new user-set volume, and save the new result.
+            const v = player.getVolume();
+            if (player.getPlayerState() === YouTube.PlayerState.PLAYING && v !== config.volume) {
+                config.volume = v;
+                saveConf();
+            }
+        }, 15000);
+
         return () => {
             console.debug('Cleaning player up...');
             props.controller.mediaPlayer = null;
+            clearInterval(timer);
         }
     }, [player, props.controller.mediaPlayer]);
 
@@ -130,6 +157,7 @@ export const YoutubePlayer = (props: {controller: GameController, loop: boolean,
         <YouTube
             // @ts-ignore
             opts={PLAYER_OPTS}
+            id={'yt-player'}
             onReady={onReady}
             onPlay={onPlay}
             onPause={onPause}
@@ -160,9 +188,9 @@ export const LoadPlaylistButton = (props: {player: any}) => {
         });
     };
 
-    return <div>
+    return <div className={'ytPlayerPlaylistButton'}>
         <Button
-            style={{color: 'rgba(25,160,7,0.94)'}}
+            style={{color: 'rgba(25,160,7,0.94)', height: '100%'}}
             onClick={() => needPrompt(true)}
         >
             Load Playlist
@@ -178,3 +206,20 @@ export const LoadPlaylistButton = (props: {player: any}) => {
         />
     </div>
 }
+
+
+export const ShuffleButton = observer((props: {player: any}) => {
+    const toggle = () => {
+        config.shuffle = !config.shuffle;
+        props.player.setShuffle(config.shuffle);
+
+        saveConf();
+    }
+
+    return <Tooltip title={"Shuffle"}>
+        <IconButton
+            children={<ShuffleIcon className={`ytPlayerShuffleIcon ${config.shuffle ? 'active': 'inactive'}`}/>}
+            onClick={toggle}
+        />
+    </Tooltip>
+});

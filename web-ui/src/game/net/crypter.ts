@@ -1,4 +1,4 @@
-import {getCerts, setCerts} from "../db/metadata-db";
+import {Meta, metadata} from "../db/metadata-db";
 import {observable} from "mobx";
 
 const keyAlg = 'ECDSA';
@@ -31,7 +31,8 @@ export async function hash(message: string) {
  * Generate a sign/verify key. if they already exist in storage, use them instead.
  */
 export async function initKeys(): Promise<void> {
-    const { pubKey, privKey } = await getCerts();
+    const { pubKey, privKey } = (await metadata.get(Meta.CERT_BUNDLE) || {});
+
     if (!pubKey || !privKey) {
         await regenKeys();
         console.debug('Generated new ID keys.');
@@ -57,7 +58,7 @@ export async function regenKeys() {
 
     const { privKey, pubKey } = await exportKeys();
 
-    await setCerts(pubKey, privKey);
+    await metadata.store(Meta.CERT_BUNDLE, {pubKey, privKey});
     await getMyRoomID();
 }
 
