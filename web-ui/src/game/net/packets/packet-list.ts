@@ -22,5 +22,5 @@ export const packetList: typeof ProtoWrapper[] = [
 export const packetMap: Record<string, number> = {};
 
 for (let i=0; i<packetList.length; i++) {
-    packetMap[packetList[i].name] = i;
+    packetMap[packetList[i].$type.name] = i;
 }

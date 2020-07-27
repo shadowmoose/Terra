@@ -6,7 +6,7 @@ import { packetList, packetMap } from "./packets/packet-list";
  * @param packet
  */
 export async function encode(packet: any): Promise<Uint8Array> {
-    const id = packetMap[packet.constructor.name];
+    const id = packetMap[packet.$type.name];
     const clazz = packetList[id];
 
     if (!clazz) throw Error(`Error encoding packet: Unknown type: "${packet.constructor.name}"!`)
