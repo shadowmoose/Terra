@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "https://shadowmoose.github.io/Terra/unstable/precache-manifest.4fdc0e1c316034c7b009794671f6b0cb.js"
+  "https://shadowmoose.github.io/Terra/unstable/precache-manifest.245df848e3b1e67b7662a8f73653d86d.js"
 );
 
 self.addEventListener('message', (event) => {
