@@ -13,7 +13,7 @@ import {SnackbarProvider} from 'notistack';
 import * as connection from "./game/net/peerconnection";
 import {NetworkMode} from "./game/net/peerconnection";
 import {SnackbarUtilsConfigurator} from "./ui-components/notifications";
-import {Meta, metadata} from './game/db/metadata-db';
+import {Meta, metadata, currentUsername} from './game/db/metadata-db';
 import {CampaignSelector} from "./ui-components/campaignSelector";
 import {BoardSelector} from "./ui-components/boardSelector";
 import {BoardSaveButton} from "./ui-components/boardSaveButton";
@@ -41,6 +41,7 @@ const App = observer(() => {
     const setName = async (name: string) => {
         if (name && name.length) {
             setNeedName(false);
+            currentUsername.set(name);
             await metadata.store(Meta.USERNAME, name);
             await controller.start();
         } else {
@@ -51,6 +52,7 @@ const App = observer(() => {
         // Check initially to see if we already have a username stored:
         metadata.get(Meta.USERNAME).then(async (name: string) => {
             if (name && name.length) {
+               currentUsername.set(name);
                setNeedName(false);
                await controller.start();
             }

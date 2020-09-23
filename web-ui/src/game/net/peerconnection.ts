@@ -30,8 +30,6 @@ export enum NetworkMode {
 let handlers: Handler[] = [];
 let preConn: PreCheck[] = [];
 
-
-
 export const clients: ObservableSet<Client> = observable(new Set<Client>());
 
 let _peer: Peer | null = null;

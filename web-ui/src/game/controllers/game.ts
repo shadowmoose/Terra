@@ -25,6 +25,7 @@ import CampaignLoader from "../data/campaign-loader";
 import BoardReloadHandler from "../net/handlers/board-reload-handler";
 import MediaSyncHandler from "../net/handlers/media-sync-handler";
 import MediaSync from "../net/prechecks/media-sync";
+import {ProtoSprite} from "../data/protobufs/proto-sprite";
 
 
 export default class GameController {
@@ -167,7 +168,14 @@ export default class GameController {
         const tiles = Object.values(this.terrain.getDirectMap()).flat();
         const pb = new ProtoBoard().assign(await packer.packBoard(tiles));
 
-        pb.entities = this.entities.getEntityList().filter(e=>includeHidden||e.visible).map(e => ProtoEntity.fromEntity(e));
+        pb.entities = this.entities.getEntityList().filter(e=>includeHidden||e.visible).map(e => {
+            const sprite = new ProtoSprite().assign({id: e.sprite.id, idx: e.sprite.idx})
+            return new ProtoEntity().assign({
+                ...e,
+                sprite,
+                owners: Array.from(e.owners)
+            });
+        });
 
         return pb;
     }

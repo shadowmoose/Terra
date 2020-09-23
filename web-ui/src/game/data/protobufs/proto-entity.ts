@@ -1,7 +1,6 @@
 import {Field, Type} from "protobufjs/light";
 import ProtoWrapper from "./proto-wrapper";
 import {ProtoSprite} from "./proto-sprite";
-import {Entity} from "../../controllers/entities";
 
 @Type.d("ProtoEntity")
 export class ProtoEntity extends ProtoWrapper<ProtoEntity> {
@@ -31,13 +30,4 @@ export class ProtoEntity extends ProtoWrapper<ProtoEntity> {
 
     @Field.d(9, 'string', "required")
     public name: string = '';
-
-    public static fromEntity(entity: Entity) {
-        const sprite = new ProtoSprite().assign({id: entity.sprite.id, idx: entity.sprite.idx})
-        return new ProtoEntity().assign({
-            ...entity,
-            sprite,
-            owners: Array.from(entity.owners)
-        });
-    }
 }
