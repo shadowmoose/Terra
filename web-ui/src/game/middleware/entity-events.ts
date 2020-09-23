@@ -119,7 +119,7 @@ export default class EntityMiddleware extends Middleware {
                 ele.innerText = `${this.pathLength()*5}`;
             }
             this.moveTrackers.push(ele);
-            this.container.prepend(ele);
+            this.container.append(ele);
         }
     }
 

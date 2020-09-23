@@ -53,6 +53,9 @@ canvas {
   position: absolute;
   background: rgba(59, 59, 59, 0.7);
   pointer-events: none;
+  text-align: center;
+  line-height: 40px; // Hack to "center" text vertically.
+  color: whitesmoke;
 }
 
 .entityNamePlate {
