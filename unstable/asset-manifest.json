@@ -1,0 +1,31 @@
+{
+  "files": {
+    "main.css": "https://shadowmoose.github.io/Terra/unstable/static/css/main.68db722b.chunk.css",
+    "main.js": "https://shadowmoose.github.io/Terra/unstable/static/js/main.d43619b5.chunk.js",
+    "main.js.map": "https://shadowmoose.github.io/Terra/unstable/static/js/main.d43619b5.chunk.js.map",
+    "runtime-main.js": "https://shadowmoose.github.io/Terra/unstable/static/js/runtime-main.462bf271.js",
+    "runtime-main.js.map": "https://shadowmoose.github.io/Terra/unstable/static/js/runtime-main.462bf271.js.map",
+    "static/css/2.9294ac0f.chunk.css": "https://shadowmoose.github.io/Terra/unstable/static/css/2.9294ac0f.chunk.css",
+    "static/js/2.4728da02.chunk.js": "https://shadowmoose.github.io/Terra/unstable/static/js/2.4728da02.chunk.js",
+    "static/js/2.4728da02.chunk.js.map": "https://shadowmoose.github.io/Terra/unstable/static/js/2.4728da02.chunk.js.map",
+    "11e5f2faf2f03c808470.worker.js": "https://shadowmoose.github.io/Terra/unstable/11e5f2faf2f03c808470.worker.js",
+    "11e5f2faf2f03c808470.worker.js.map": "https://shadowmoose.github.io/Terra/unstable/11e5f2faf2f03c808470.worker.js.map",
+    "38b3aa3c469b46feaafa.worker.js": "https://shadowmoose.github.io/Terra/unstable/38b3aa3c469b46feaafa.worker.js",
+    "38b3aa3c469b46feaafa.worker.js.map": "https://shadowmoose.github.io/Terra/unstable/38b3aa3c469b46feaafa.worker.js.map",
+    "index.html": "https://shadowmoose.github.io/Terra/unstable/index.html",
+    "precache-manifest.d06ead4b1ae7c003d8547e6c52724868.js": "https://shadowmoose.github.io/Terra/unstable/precache-manifest.d06ead4b1ae7c003d8547e6c52724868.js",
+    "service-worker.js": "https://shadowmoose.github.io/Terra/unstable/service-worker.js",
+    "static/css/2.9294ac0f.chunk.css.map": "https://shadowmoose.github.io/Terra/unstable/static/css/2.9294ac0f.chunk.css.map",
+    "static/css/main.68db722b.chunk.css.map": "https://shadowmoose.github.io/Terra/unstable/static/css/main.68db722b.chunk.css.map",
+    "static/js/2.4728da02.chunk.js.LICENSE.txt": "https://shadowmoose.github.io/Terra/unstable/static/js/2.4728da02.chunk.js.LICENSE.txt",
+    "static/media/index.css": "https://shadowmoose.github.io/Terra/unstable/static/media/roboto-latin-900-normal.bb1e4dc6.woff",
+    "static/media/sheet-composite.enc.png": "https://shadowmoose.github.io/Terra/unstable/static/media/sheet-composite.enc.52e99977.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.462bf271.js",
+    "static/css/2.9294ac0f.chunk.css",
+    "static/js/2.4728da02.chunk.js",
+    "static/css/main.68db722b.chunk.css",
+    "static/js/main.d43619b5.chunk.js"
+  ]
+}
