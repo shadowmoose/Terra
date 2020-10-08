@@ -3,6 +3,7 @@ import {Sprite} from "../util/sprite-loading";
 import {Tile} from "./interfaces/tile";
 import {ProtoSprite} from "./protobufs/proto-sprite";
 
+// TODO: https://stackoverflow.com/questions/6945105/search-matrix-for-all-rectangles-of-given-dimensions-select-blocks-of-seats/7353193#7353193
 
 /**
  * Builds a ProtoTileStack object with all the given Tiles, and their sprites deduplicated.

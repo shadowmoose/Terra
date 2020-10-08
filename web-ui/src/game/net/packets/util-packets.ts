@@ -7,7 +7,7 @@ export class PingPacket extends ProtoWrapper<PingPacket> {}
 @Type.d("SignaturePacket")
 export class SignaturePacket extends ProtoWrapper<SignaturePacket> {
     @Field.d(1, "string", "required", 'def')
-    public signedJSON: string = '';
+    public username: string = '';
 }
 
 @Type.d("ReadyPacket")
