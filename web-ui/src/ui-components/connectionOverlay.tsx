@@ -29,9 +29,6 @@ export default function ConnectionOverlay(props: {controller: GameController}) {
             case NetworkStatus.CONNECTING:
                 message = 'Connecting to Host...';
                 break;
-            case NetworkStatus.MATCHMAKING:
-                message = 'Connecting to matchmaking server...';
-                break;
             case NetworkStatus.MATCHMAKING_FAIL:
                 message = 'Connection to matchmaking server failed. Please reload.';
                 break;

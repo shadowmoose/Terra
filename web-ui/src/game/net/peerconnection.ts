@@ -1,5 +1,3 @@
-import Peer, {DataConnection} from 'peerjs';
-import {getMyRoomID} from './crypter'
 import Handler from "./handlers/handler";
 import {IObservableValue, observable, ObservableSet} from "mobx";
 import notifications from "../../ui-components/notifications";
@@ -9,6 +7,9 @@ import PromiseStream from "../util/promiseStream";
 import {PreCheck} from "./prechecks/precheck";
 import {UserData} from "../db/user-db";
 import {PingPacket} from "./packets/util-packets";
+import {Switchboard} from "switchboard.js/build/module/switchboard"; // TODO: Clean this up when lib is done.
+import {ConnectedPeer} from "switchboard.js/build/module/tracker";
+import {metadata, Meta} from "../db/metadata-db";
 
 export enum NetworkStatus {
     IDLE,
@@ -16,7 +17,6 @@ export enum NetworkStatus {
     CONNECTING,
     RECONNECTING,
     DISCONNECTED,
-    MATCHMAKING,
     MATCHMAKING_FAIL,
     WAITING_FOR_HOST
 }
@@ -32,8 +32,7 @@ let preConn: PreCheck[] = [];
 
 export const clients: ObservableSet<Client> = observable(new Set<Client>());
 
-let _peer: Peer | null = null;
-export let roomID: IObservableValue<string> = observable.box('');
+let sb: Switchboard | null = null;
 export let netStatus: IObservableValue<NetworkStatus> = observable.box(NetworkStatus.IDLE);
 export let netMode: IObservableValue<NetworkMode> = observable.box(NetworkMode.UNKNOWN);
 
@@ -42,138 +41,127 @@ export function setHandlers(newHandlers: Handler[], newPreConn: PreCheck[]) {
     preConn = newPreConn
 }
 
-export async function peer(makeNew: boolean = false): Promise<Peer> {
-    if (_peer){
-        if (makeNew) {
-            _peer.destroy()
-            _peer = null;
-        } else {
-            return _peer;
-        }
+/**
+ * Get the seed that can regenerate the public/private key.
+ * If one does not exist already, it is created.
+ */
+async function getSeed(): Promise<string> {
+    let seed = await metadata.get(Meta.CERT_SEED);
+
+    if (!seed) {
+        await metadata.store(Meta.CERT_SEED, seed = Switchboard.makeSeed());
     }
 
-    roomID.set(await getMyRoomID());
-
-    netStatus.set(NetworkStatus.MATCHMAKING);
-
-    _peer = new Peer(roomID.get(), {
-        host: 'peerjs.rofl.wtf', // Relative path assumes current hostname.
-        port: 443,
-        path: '/',
-        key: 'gaia-password',
-        secure: true
-    });
-
-    await new Promise((res, rej) => {
-        // Wait for the peer server connection to be ready.
-        // @ts-ignore
-        _peer.on('open', res);
-        // @ts-ignore
-        _peer.on('error', (err: any) => {
-            console.error(`PeerJS Error:`, err);
-            notifications.error(`PeerJS Error: ${err.message}`, {preventDuplicate: true, autoHideDuration: 10000})
-            netStatus.set(NetworkStatus.MATCHMAKING_FAIL);
-            rej(err);
-        });
-    });
-
-    return _peer;
+    return seed;
 }
 
-export async function connectTo(roomID: string): Promise<any> {
+/**
+ * Get the current local peer ID. Generates a new one if it does not already exist.
+ * @param useLongform
+ */
+export async function getMyID(useLongform: boolean = false) {
+    if (sb) {
+        return useLongform ? sb.fullID : sb.peerID;
+    }
+    return Switchboard.getIdFromSeed(await getSeed(), useLongform);
+}
+
+/**
+ * Kill any running SwitchBoard, and start a new one.
+ */
+export async function makeSB() {
+    if (sb) {
+        sb.kill(new Error('Closed to launch new Peer connection.'));
+    }
+    return new Switchboard({
+        seed: await getSeed()
+    });
+}
+
+export async function connectTo(hostID: string): Promise<any> {
     await setMode(NetworkMode.CLIENT);
     if (netStatus.get() !== NetworkStatus.RECONNECTING) netStatus.set(NetworkStatus.CONNECTING);
-    const p = await peer(true);
 
-    let conn: DataConnection;
-    let client: Client;
+    sb = await makeSB();
 
-    conn = p.connect(roomID, {
-        reliable: true
-    });
-    client = new Client(conn, handlers, roomID);
-    client.shouldReconnect = true;
-
-    conn.on('close', () => clientError('host disconnected', client));
-    conn.on('error', (err: any) => clientError(err, client));
-    conn.on('open', () => {
+    sb.on('peer', async (peer) => {
         notifications.success('Connected to host!');
-        console.log('CONNECTED TO HOST!');
+
+        const client = new Client(peer, handlers);
+        peer.on('close', () => clientError('host disconnected', client));
+        peer.on('error', (err: any) => clientError(err, client));
+
+        try {
+            netStatus.set(NetworkStatus.WAITING_FOR_HOST);
+            for (const pc of preConn) {
+                await pc.run(false, client);
+                console.debug('Finished pre-check:', pc.constructor.name);
+            }
+            client.verified = true;
+            clients.add(client);
+            netStatus.set(NetworkStatus.CONNECTED);
+        } catch (err) {
+            console.error('failed validation', err);
+        }
     });
 
-    try {
-        netStatus.set(NetworkStatus.WAITING_FOR_HOST);
-        for (const pc of preConn) {
-            await pc.run(false, client);
-            console.debug('Finished pre-check:', pc.constructor.name);
-        }
-        client.verified = true;
-        clients.add(client);
-        netStatus.set(NetworkStatus.CONNECTED);
-    } catch (err) {
-        console.error('failed validation', err);
-        client.shouldReconnect = false;
-        await clientError(err, client)
-    }
+    sb.on('kill', (err) => {
+        console.error(err);
+        netStatus.set(NetworkStatus.DISCONNECTED);
+    });
+
+    sb.findHost(hostID);
 }
 
 export async function clientError(err: any, client: Client): Promise<any> {
-    console.warn('Client Error:', err, client.shouldReconnect);
+    console.warn('Client Error:', err);
     removeClient(client);
     client.close();
 
-    netStatus.set(NetworkStatus.DISCONNECTED);
-
-    if (client.shouldReconnect) {
-        console.log('Reconnecting...');
-        netStatus.set(NetworkStatus.RECONNECTING);
-        return connectTo(client.roomID)
-    }
+    console.log('Reconnecting to host...');
+    netStatus.set(NetworkStatus.RECONNECTING);
 }
 
 export async function openHost() {
     await setMode(NetworkMode.HOST);
 
-    const server = await peer(true);
+    sb = await makeSB();
 
     netStatus.set(NetworkStatus.CONNECTED);
 
-    server.on('connection', (conn: DataConnection) => {
-        let cli: Client|null = null;
-        console.warn('Client connected!')
-        conn.on('open', async () => {
-            cli = new Client(conn, handlers, roomID.get());
-            try{
-                for (const pc of preConn) {
-                    await pc.run(true, cli);
-                    console.debug('Finished pre-check:', pc.constructor.name);
-                }
-                cli.verified = true;
-                clients.add(cli);
-            } catch (err) {
-                console.error(err);
-                cli.close();
-            }
+    sb.on('peer', async peer => {
+        console.warn('Client connected!');
+        const cli = new Client(peer, handlers);
+
+        peer.on('close', () => {
+            console.debug('Client dropped:', cli);
+            removeClient(cli);
         });
-        conn.on('close', () => {
-            if (cli) {
-                console.debug('Client dropped:', cli);
-                removeClient(cli);
+
+        try {
+            for (const pc of preConn) {
+                await pc.run(true, cli);
+                console.debug('Finished pre-check:', pc.constructor.name);
             }
-        });
+            cli.verified = true;
+            clients.add(cli);
+        } catch (err) {
+            console.error(err);
+            cli.close();
+        }
     });
 }
 
 export async function kill(): Promise<void> {
-    if (_peer) {
+    if (sb) {
         clients.forEach(p => {
             p.close();
             removeClient(p);
         });
         netMode.set(NetworkMode.UNKNOWN);
         netStatus.set(NetworkStatus.IDLE);
-        await _peer.destroy();
-        _peer = null;
+        sb.kill();
+        sb = null;
     }
 }
 
@@ -192,27 +180,24 @@ function removeClient(client: Client) {
 
 
 export class Client {
-    private conn: DataConnection;
+    private peer: ConnectedPeer;
     private listener: Function|null = null;
-    public readonly roomID: string;
     private readonly handlers: Handler[];
     public verified: boolean = false;
-    public shouldReconnect: boolean = false;
     private lastSend = Promise.resolve();
     private stream = new PromiseStream();
     public userData: UserData = {id: -1, username: 'null', keyCodes:[], lastSeen: 0};
     private readonly pingTimer: any = null;
     public lastPing: number = 0;
 
-    constructor(conn: DataConnection, handlers: Handler[], roomID: string) {
-        this.conn = conn;
-        this.roomID = roomID;
+    constructor(peer: ConnectedPeer, handlers: Handler[]) {
+        this.peer = peer;
         this.handlers = handlers;
         this.hook();
 
         this.pingTimer = setInterval(() => {
             if (!this.verified) return;
-            if (!this.conn.open) return this.close();
+            if (this.peer.isClosed) return this.close();
             if (!this.lastPing) {
                 this.lastPing = Date.now();
                 return;
@@ -226,13 +211,17 @@ export class Client {
 
     hook() {
         const self = this;
-        this.conn.on('data', data => {
-            self.stream.queue(() => self.handleMessage(data), ()=>this.conn.close())
+        this.peer.on('data', (data: any) => {
+            self.stream.queue(() => self.handleMessage(data), ()=>this.peer.close())
         });
-        this.conn.on('error', (err) => {
+        this.peer.on('error', (err) => {
             console.error('Client error:', err);
-            this.conn.close();
+            this.peer.close();
         });
+    }
+
+    get id() {
+        return this.peer.id;
     }
 
     async handleMessage(packetBinary: ArrayBuffer) {
@@ -254,19 +243,18 @@ export class Client {
             }
         } catch (err) {
             console.error(err);
-            this.shouldReconnect = false;
             this.close();
         }
     }
 
     close() {
         if (this.listener) {
-            this.shouldReconnect = false;
+            // TODO: Add to blacklist on current SwitchBoard.
             this.listener(null);
         }
         if (this.pingTimer) clearTimeout(this.pingTimer);
 
-        this.conn.close();
+        this.peer.close();
     }
 
     /**
@@ -284,7 +272,7 @@ export class Client {
     }
 
     sendBuffer(data: Uint8Array) {
-        this.conn.send(data);
+        this.peer.send(data);
     }
 
     /**

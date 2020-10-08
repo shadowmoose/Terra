@@ -4,7 +4,7 @@ import {observable} from "mobx";
 export const currentUsername = observable.box<string>('');
 
 export enum Meta {
-    CERT_BUNDLE = 'certs',
+    CERT_SEED = 'secret_cert_seed',
     USERNAME = 'username',
     CAMPAIGN_CURRENT = 'campaign_current',
     PLAYER_CONFIG = 'player_config',

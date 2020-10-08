@@ -3,9 +3,8 @@ import {Sprite, waitForSpriteLoad} from "../util/sprite-loading";
 import Terrain from "./terrain";
 import {boardTileHeight, boardTileWidth, imageHeightPx, imageWidthPx} from "../consts";
 import {observable} from "mobx";
-import {getMyRoomID, initKeys} from "../net/crypter";
 import * as connection from '../net/peerconnection'
-import {broadcast, NetworkStatus} from "../net/peerconnection";
+import {broadcast, NetworkStatus, getMyID} from "../net/peerconnection";
 import EntityLayer from "./entities";
 import HandShakeCheck from "../net/prechecks/signature-check";
 import BoardSync from "../net/prechecks/board-sync-check";
@@ -74,12 +73,11 @@ export default class GameController {
 
         this.canvasContainer.setCanvasSize(boardTileWidth * imageWidthPx, boardTileHeight * imageHeightPx);
 
-        await initKeys();
-        console.log('Local Room ID Key:', await getMyRoomID());
+        console.log('Local Room ID Key:', await getMyID());
 
         const hash = window.location.hash.replace('#', '');
         if (hash) {
-            if ((await getMyRoomID()) === hash) {
+            if ((await getMyID()) === hash) {
                 // This is our URL - hosting.
                 await this.startHost();
             } else {
@@ -100,8 +98,8 @@ export default class GameController {
         await connection.kill();
         this.lobby.pendingLogins.forEach(pu => this.lobby.rejectUser(pu));
 
-        console.log('Hosting lobby at:', await getMyRoomID());
-        window.location.hash = await getMyRoomID();
+        console.log('Hosting lobby at:', await getMyID());
+        window.location.hash = await getMyID();
 
         this.handlers.forEach(h => h.setHost(true));
         connection.setHandlers(this.handlers, this.preChecks);

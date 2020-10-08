@@ -1,5 +1,4 @@
 import {Client} from "../peerconnection";
-import {exportKeys, pack, unpack} from "../crypter";
 import {PreCheck} from "./precheck";
 import {addNewUser, checkUserCredentials, getUser, updateUser} from "../../db/user-db";
 import {Meta, metadata} from '../../db/metadata-db';
@@ -13,27 +12,13 @@ export default class HandShakeCheck extends PreCheck {
      * @param client
      */
     async client(client: Client): Promise<void> {
-        const data: SignaturePacket = await client.getNextPacket(SignaturePacket);
-        const pk = JSON.parse(data.signedJSON)?.pubKey;
-        const ob = await unpack(client.roomID, pk, data.signedJSON);
+        const username = await metadata.get(Meta.USERNAME);
+        const packet = new SignaturePacket().assign({
+            username
+        });
+        await client.send(packet);
 
-        if (ob.pubKey && ob.pubKey === pk) {
-            console.debug('Validated host ID.');
-
-            // Respond with client's own signed auth packet.
-            const { pubKey, roomID } = await exportKeys();
-            const username = await metadata.get(Meta.USERNAME);
-            const packet = new SignaturePacket().assign({
-                signedJSON: await pack({
-                    pubKey,
-                    username,
-                    roomID
-                })
-            });
-            await client.send(packet);
-
-            await client.getNextPacket(ReadyPacket); // Wait for host to allow out login.
-        }
+        await client.getNextPacket(ReadyPacket); // Wait for host to allow out login.
     }
 
     /**
@@ -42,32 +27,22 @@ export default class HandShakeCheck extends PreCheck {
      * @param client
      */
     async host(client: Client): Promise<void> {
-        // Send a signed message to verify we're the real host:
-        const packet = new SignaturePacket().assign({
-            signedJSON: await pack({
-                pubKey: (await exportKeys()).pubKey
-            })
-        });
-        await client.send(packet);
-
-        // Wait for client to respond with signed message containing username:
+        // Wait for client to send a message containing username:
         const data: SignaturePacket = await client.getNextPacket(SignaturePacket);
-        const raw = JSON.parse(data.signedJSON);
-        const ob = await unpack(raw.roomID, raw.pubKey, data.signedJSON);
-        const {username, roomID} = ob;
+        const {username} = data;
 
-        let user = await checkUserCredentials(username, roomID);
+        let user = await checkUserCredentials(username, client.id);
         if (!user) {
             let existing = await getUser(username);
 
-            await this.controller.lobby.addPendingLogin(username, roomID);  // Will be approved via UI, by the Host.
+            await this.controller.lobby.addPendingLogin(username, client.id);  // Will be approved via UI, by the Host.
 
             if (!existing) {
-                console.log(`Added new user: ${username}, ${roomID}`);
-                existing = await addNewUser({username, keyCodes: [roomID]});
+                console.log(`Added new user: ${username}, ${client.id}`);
+                existing = await addNewUser({username, keyCodes: [client.id]});
             } else {
-                console.log(`Updated existing user: ${username}, ${roomID}`);
-                existing.keyCodes.push(roomID);
+                console.log(`Updated existing user: ${username}, ${client.id}`);
+                existing.keyCodes.push(client.id);
                 await updateUser(existing);
             }
             user = existing;
