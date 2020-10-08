@@ -89,7 +89,7 @@ export async function connectTo(hostID: string): Promise<any> {
 
         const client = new Client(peer, handlers);
         peer.on('close', () => clientError('host disconnected', client));
-        peer.on('error', (err: any) => clientError(err, client));
+        peer.on('error', (err) => console.error(err));
 
         try {
             netStatus.set(NetworkStatus.WAITING_FOR_HOST);
@@ -150,6 +150,7 @@ export async function openHost() {
             cli.close();
         }
     });
+    sb.host();
 }
 
 export async function kill(): Promise<void> {
