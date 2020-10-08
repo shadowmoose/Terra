@@ -27,13 +27,6 @@ if (!('PointerEvent' in window)) {
 
 const controller = new GameController();
 
-if (process.env.NODE_ENV !== 'development') {
-    console.info('Shutting the console up for non-dev build.');
-    function noop() {}
-    console.debug = noop;
-    console.log = noop;
-    console.info = noop;
-}
 
 const App = observer(() => {
     const desktop = useMediaQuery('(min-width:900px)');
