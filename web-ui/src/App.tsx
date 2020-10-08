@@ -27,6 +27,18 @@ if (!('PointerEvent' in window)) {
 
 const controller = new GameController();
 
+if (process.env.NODE_ENV !== 'development' && !window.location.href.includes('unstable')) {
+    console.info('Shutting the console up for non-dev build.');
+    function noop() {}
+    const oldConsole = Object.assign({}, console);
+    // @ts-ignore
+    window.restoreLog = () => {
+        Object.assign(console, oldConsole);
+    };
+    console.debug = noop;
+    console.log = noop;
+    console.info = noop;
+}
 
 const App = observer(() => {
     const desktop = useMediaQuery('(min-width:900px)');
