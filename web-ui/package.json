@@ -21,6 +21,7 @@
     "@types/react-window": "^1.8.2",
     "dexie": "^3.0.1",
     "fontsource-roboto": "^2.1.4",
+    "hotkeys-js": "^3.8.1",
     "mobx": "^5.15.4",
     "mobx-react-lite": "^2.0.7",
     "node-sass": "^4.14.1",

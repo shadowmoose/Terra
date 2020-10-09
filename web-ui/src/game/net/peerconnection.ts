@@ -150,6 +150,10 @@ export async function openHost() {
             cli.close();
         }
     });
+    sb.on('kill', (err) => {
+        console.error(err);
+        netStatus.set(NetworkStatus.DISCONNECTED);
+    });
     sb.host();
 }
 

@@ -15,6 +15,7 @@ import * as connection from "../game/net/peerconnection";
 import {NetworkMode} from "../game/net/peerconnection";
 import UIEntityTool from "../ui-tools/ui-entity-tool";
 import UILobbyTool from "../ui-tools/ui-lobby-tool";
+import hotkeys from 'hotkeys-js';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -80,13 +81,23 @@ const ControlMenu = observer((props: {controller: GameController, forMobile: boo
         // When the back button is used, close the modal.
         window.addEventListener('popstate', handleModalClose);
 
+        hotkeys('1,2,3,4,5,6,7,8,9', (event, handler) => {
+            const key = parseInt(handler.key);
+            const tool = tools.filter(t=>t.isOption(props.forMobile, isHost))[key-1];
+            console.log('Hotkey:', key, tool);
+            if (tool && tool !== selectedTool) {
+                handleSelect(tool);
+            }
+        });
+
         return () => {
             window.removeEventListener('popstate', handleModalClose);
+            hotkeys.unbind('1,2,3,4,5,6,7,8,9');
         }
     });
 
     React.useEffect(() => {
-        const tools = [
+        const newTools = [
             new UICameraTool(props.controller),
             new UIPenTool(props.controller),
             new UIEraserTool(props.controller),
@@ -94,9 +105,9 @@ const ControlMenu = observer((props: {controller: GameController, forMobile: boo
             new UILobbyTool(props.controller)
         ];
 
-        setTools(tools);
-        setSelected(tools[0]);
-        tools[0].register();
+        setTools(newTools);
+        setSelected(newTools[0]);
+        newTools[0].register();
     }, [props.controller]);
 
     let ui;
@@ -145,14 +156,14 @@ const ControlMenu = observer((props: {controller: GameController, forMobile: boo
             onOpen={handleOpen}
             open={!props.forMobile || open}
         >
-            {tools.filter(t=>t.isOption(props.forMobile, isHost)).map((action) => (
+            {tools.filter(t=>t.isOption(props.forMobile, isHost)).map((action, idx) => (
                 <SpeedDialAction
                     key={action.name}
                     icon={action.icon}
                     tooltipTitle={action.name}
                     tooltipOpen
                     onClick={() => {handleSelect(action)}}
-                    title={action.name}
+                    title={action.name + ` (Hotkey: ${idx+1})`}
                 />
             ))}
         </SpeedDial>
