@@ -36,7 +36,7 @@
     "react-youtube": "^7.11.3",
     "serialazy": "^2.0.2",
     "shuffle-seed": "1.1.6",
-    "switchboard.js": "^0.2.2",
+    "switchboard.js": "^0.2.3",
     "typescript": "~3.7.2",
     "uuid": "^8.2.0"
   },
