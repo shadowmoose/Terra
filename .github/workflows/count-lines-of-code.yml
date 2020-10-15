@@ -18,7 +18,8 @@ jobs:
           debug: true
           directory: ./
           badge: ./output/loc-badge.svg
-          ignore: 'node_modules/|README'
+          patterns: '*.ts'  # Patterns in the format of a '.gitignore' file, separated by pipes.
+          ignore: 'node_modules'
 
       - name: Print the output
         run: |
