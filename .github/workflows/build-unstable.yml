@@ -40,7 +40,7 @@ jobs:
           mv unstable build
         env:
           CI: ""
-          PUBLIC_URL: "https://shadowmoose.github.io/Terra/unstable"
+          PUBLIC_URL: "https://terra.rofl.wtf/unstable"
 
       - name: Deploy to Unstable Directory
         uses: peaceiris/actions-gh-pages@v3
@@ -52,3 +52,4 @@ jobs:
           user_email: "github_bot@github.com"
           allow_empty_commit: false
           keep_files: true
+          cname: terra.rofl.wtf
