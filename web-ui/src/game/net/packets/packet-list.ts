@@ -5,6 +5,9 @@ import {EntityDeletePacket, EntityUpdatePacket} from "./entityPackets";
 import {PingPacket, ReadyPacket, SignaturePacket} from "./util-packets";
 import {MediaRequestPacket, MediaStatusPacket} from "./media-packets";
 
+/**
+ * The order of this list is important, as the index represents the packet ID for messages and saved boards.
+ */
 export const packetList: typeof ProtoWrapper[] = [
     SignaturePacket,
     ReadyPacket,

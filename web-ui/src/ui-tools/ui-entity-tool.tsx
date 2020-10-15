@@ -20,6 +20,10 @@ import FormGroup from "@material-ui/core/FormGroup";
 import GameController from "../game/controllers/game";
 import EntityUpdateHandler from "../game/net/handlers/entity-update-handler";
 import {clients} from '../game/net/peerconnection';
+import Campaign from "../game/controllers/campaign";
+import {EntityInterface} from "../game/data/interfaces/entity";
+import CampaignLoader from "../game/data/campaign-loader";
+import stripProxy from "../game/util/deproxy";
 
 
 export default class UIEntityTool extends UITool {
@@ -27,7 +31,7 @@ export default class UIEntityTool extends UITool {
     readonly name: string = 'Entity';
 
     getControlUI(forMobile: boolean): JSX.Element {
-        return <EntityInterface
+        return <EntityEditorInterface
             entities={this.controller.entities}
             controller={this.controller}
         />
@@ -65,11 +69,12 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const EntityInterface = observer((props: {entities: EntityLayer, controller: GameController}) => {
+const EntityEditorInterface = observer((props: {entities: EntityLayer, controller: GameController}) => {
     const [promptSprite, setSpritePrompt] = React.useState(false);
     const [selectedSprite, setSprite] = React.useState(null);
     const [entName, setName] = React.useState('');
     const [visible, setVisible] = React.useState(true);
+    const [loadExisting, setLoadExisting] = React.useState(false);
 
     const resetValues = () => {
         setSpritePrompt(false);
@@ -78,7 +83,7 @@ const EntityInterface = observer((props: {entities: EntityLayer, controller: Gam
         setVisible(true);
     }
 
-    if (props.entities.selected) return <EntityEditInterface entities={props.entities}/>
+    if (props.entities.selected) return <EntityEditInterface entities={props.entities} campaign={props.controller.campaign}/>
 
     return <div className={'cont'}>
         <h2>Create Entity</h2>
@@ -116,9 +121,12 @@ const EntityInterface = observer((props: {entities: EntityLayer, controller: Gam
                 variant="contained"
                 color="primary"
                 onClick={()=>{createEntity(props.entities, props.controller, selectedSprite, entName, visible); resetValues();}}
-                disabled={!selectedSprite || entName.trim().length === 0}
+                disabled={!selectedSprite}
             >
                 Create
+            </Button>
+            <Button variant="contained" color="default" onClick={()=>setLoadExisting(true)} disabled={!props.controller.campaign?.characters.length}>
+                Load Character
             </Button>
             <Button variant="contained" color="secondary" onClick={resetValues} >
                 Clear
@@ -131,11 +139,19 @@ const EntityInterface = observer((props: {entities: EntityLayer, controller: Gam
             onSelect={setSprite}
             currentSprite={selectedSprite||null}
         />
+
+        <CampaignCharacterSelector
+            entities={props.entities}
+            controller={props.controller}
+            campaign={props.controller.campaign}
+            open={loadExisting}
+            onClose={()=>setLoadExisting(false)}
+        />
     </div>
 });
 
 
-const EntityEditInterface = observer((props: {entities: EntityLayer}) => {
+const EntityEditInterface = observer((props: {entities: EntityLayer, campaign: Campaign|null}) => {
     const ent = props.entities.selected?.entity;
     if (!ent) return null;
 
@@ -151,12 +167,20 @@ const EntityEditInterface = observer((props: {entities: EntityLayer}) => {
             if (ent) {
                 timeout = setTimeout(() => {
                     props.entities.updateEntity(ent.id, info);
+                    if (props.campaign) {
+                        updateCampaign(props.campaign, ent);
+                    }
                 }, 200);
             }
         }
-    }, [props.entities])
+    }, [props.entities, props.campaign])
     const classes = useStyles();
-    const updateInstant = (info: Partial<Entity>) => props.entities.updateEntity(ent.id, info);
+    const updateInstant = (info: Partial<Entity>) => {
+        props.entities.updateEntity(ent.id, info);
+        if (props.campaign) {
+            updateCampaign(props.campaign, ent);
+        }
+    }
     const clientNames: string[] = Array.from(clients).filter(c=>c.userData).map(cl =>{
         // @ts-ignore
         return cl.userData.username
@@ -284,9 +308,79 @@ const EntityEditInterface = observer((props: {entities: EntityLayer}) => {
 });
 
 
+const CampaignCharacterSelector = observer((props: {
+    open: boolean,
+    entities: EntityLayer,
+    controller: GameController,
+    campaign: Campaign|null,
+    onClose: Function
+}) => {
+    if (!props.campaign) return null;
+    const characters = props.campaign.characters;
+    const [selected, setSelected] = React.useState(characters.length > 0 ? characters[0]?.id : '');
+
+    const onSelect = (id: any) => {
+        console.log('Selected character ID:', id);
+        setSelected(id);
+    };
+
+    const getSelected = (id: any) => {
+        return props.campaign?.characters.find(c => c.id === id);
+    }
+
+    return <Dialog open={props.open} onClose={()=>props.onClose()}>
+            <DialogTitle>Select a Campaign Character</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Select a character saved to this campaign:
+                </DialogContentText>
+                <Select
+                    onChange={(evt)=>onSelect(evt.target.value)}
+                    input={<Input />}
+                    renderValue={(selected: any) => {
+                        const sel = getSelected(selected);
+                        if (!sel) return '';
+
+                        return <MenuItem style={{pointerEvents: 'none'}}>
+                            <SpriteImage sprite={new Sprite(sel.sprite.id, sel.sprite.idx)} />
+                            {sel.name}
+                        </MenuItem>
+                    }}
+                    style={{marginBottom: '25px',  width: '100%'}}
+                    value={selected}
+                >
+                    {props.campaign.characters.map((cha: EntityInterface) => (
+                        <MenuItem key={cha.id} value={cha.id}>
+                            <SpriteImage sprite={new Sprite(cha.sprite.id, cha.sprite.idx)} />
+                            <ListItemText primary={cha.name} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => {
+                    props.onClose()
+                }} color="primary">
+                    Cancel
+                </Button>
+                <Button onClick={() => {
+                    const sel = getSelected(selected);
+                    if (sel) {
+                        const sp = new Sprite(sel.sprite.id, sel.sprite.idx);
+                        createEntity(props.entities, props.controller, sp, sel.name, true, sel);
+                        props.onClose();
+                    }
+                }} color="primary">
+                    Load
+                </Button>
+            </DialogActions>
+        </Dialog>
+});
+
+
 function PromptForNumber(props: {title: string, prompt: string, label?: string, open: boolean, onCancel: Function, onSubmit: Function}) {
     const [num, setNum] = React.useState(0);
-    const handleClose = (event: any) => {
+    const handleClose = () => {
         props.onSubmit(num);
     };
 
@@ -324,7 +418,7 @@ function cloneEntity(entities: EntityLayer, ent: Entity, num: number) {
                 x: ent.x,
                 y: ent.y,
                 color: ent.color,
-                owners: ent.owners,
+                owners: [...ent.owners],
                 visible: ent.visible,
                 name: `${ent.name} ${i+2}`
             });
@@ -336,14 +430,50 @@ function cloneEntity(entities: EntityLayer, ent: Entity, num: number) {
 }
 
 
-function createEntity(entities: EntityLayer, controller: GameController, sprite: Sprite|null, name: string, visible: boolean) {
+function createEntity(entities: EntityLayer, controller: GameController, sprite: Sprite|null, name: string, visible: boolean, ext?: EntityInterface) {
     if (!sprite) return;
 
     const coords = controller.canvasContainer.screenToBoard(window.innerWidth/2, window.innerHeight/2)
     entities.addEntity(sprite, {
+        ...(ext||{}),
+        sprite,
         name,
         visible,
         x: coords.x,
         y: coords.y
     })
+}
+
+let campUpdateTimer: any = null;
+
+/**
+ * Updates, adds, or removes the current Entity from the given Campaign's saved characters.
+ * Maintains its own timer, to avoid spam-updating the DB.
+ * @param campaign
+ * @param ent
+ */
+function updateCampaign(campaign: Campaign, ent: Entity) {
+    clearTimeout(campUpdateTimer);
+    campUpdateTimer = setTimeout(() => {
+        const savedIdx = campaign.characters.findIndex(c => c.id === ent.id);
+
+        if (ent.saveToCampaign) {
+            const newData: EntityInterface = {
+                color: ent.color,
+                id: ent.id,
+                name: ent.name,
+                owners: Array.from(ent.owners),
+                saveToCampaign: true,
+                sprite: {
+                    id: ent.sprite.id,
+                    idx: ent.sprite.idx
+                }
+            }
+            campaign.characters.splice(savedIdx >= 0 ? savedIdx : campaign.characters.length, 1, stripProxy(newData));
+            CampaignLoader.saveCampaign(campaign).then(() => console.debug('Updated campaign.'));
+        } else if (savedIdx >= 0) {
+            campaign.characters.splice(savedIdx, 1);
+            CampaignLoader.saveCampaign(campaign).then(() => console.debug('Removed entity from campaign.'));
+        }
+    }, 500);
 }

@@ -6,9 +6,10 @@ import {observable} from "mobx";
 import {isHost} from "../net/peerconnection";
 import EntityUpdateHandler from "../net/handlers/entity-update-handler";
 import {currentUsername} from "../db/metadata-db";
+import {EntityInterface} from "../data/interfaces/entity";
 
 
-export class Entity {
+export class Entity implements EntityInterface{
     @observable sprite: Sprite;
     @observable name: string;
     @observable color: string = '#000000';
@@ -253,6 +254,8 @@ export default class EntityLayer {
     public addEntity(sprite: Sprite, opts?: Partial<Entity>, sendUpdate: boolean = true) {
         const ent = new Entity(sprite, opts);
         const entEle = new EntityEle(this.ele, this.plateEle, ent, this.select.bind(this));
+
+        this.remove(ent.id, sendUpdate);
 
         entEle.setInput(this.enableInput);
         this.entityElements[ent.id] = entEle;

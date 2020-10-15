@@ -34,7 +34,8 @@ export default class CampaignLoader {
     public static async saveCampaign(camp: Campaign): Promise<number> {
         return saveCampaign({
             ...camp,
-            boards: Array.from(camp.boards)
+            boards: Array.from(camp.boards),
+            characters: Array.from(camp.characters)
         }).catch(err => {
             console.error(err)
             return -1;

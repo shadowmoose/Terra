@@ -173,8 +173,8 @@ export function SpritePickerModal(props: {open: boolean, onClose: Function, onSe
     const classes = useStyles();
     return <Modal
         open={props.open}
-        aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
+        aria-labelledby="sprite-picker-modal"
+        aria-describedby="pick a sprite to use"
         onClose={()=>props.onClose()}
     >
         <div className={classes.paper}>
