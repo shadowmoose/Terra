@@ -1,31 +1,31 @@
 {
   "files": {
     "main.css": "https://terra.rofl.wtf/static/css/main.68db722b.chunk.css",
-    "main.js": "https://terra.rofl.wtf/static/js/main.34981df1.chunk.js",
-    "main.js.map": "https://terra.rofl.wtf/static/js/main.34981df1.chunk.js.map",
+    "main.js": "https://terra.rofl.wtf/static/js/main.c4126aa7.chunk.js",
+    "main.js.map": "https://terra.rofl.wtf/static/js/main.c4126aa7.chunk.js.map",
     "runtime-main.js": "https://terra.rofl.wtf/static/js/runtime-main.da17bb8b.js",
     "runtime-main.js.map": "https://terra.rofl.wtf/static/js/runtime-main.da17bb8b.js.map",
     "static/css/2.d3e916ef.chunk.css": "https://terra.rofl.wtf/static/css/2.d3e916ef.chunk.css",
-    "static/js/2.87187fea.chunk.js": "https://terra.rofl.wtf/static/js/2.87187fea.chunk.js",
-    "static/js/2.87187fea.chunk.js.map": "https://terra.rofl.wtf/static/js/2.87187fea.chunk.js.map",
+    "static/js/2.a550f78e.chunk.js": "https://terra.rofl.wtf/static/js/2.a550f78e.chunk.js",
+    "static/js/2.a550f78e.chunk.js.map": "https://terra.rofl.wtf/static/js/2.a550f78e.chunk.js.map",
     "e9619ee137f3ebdc3b90.worker.js": "https://terra.rofl.wtf/e9619ee137f3ebdc3b90.worker.js",
     "e9619ee137f3ebdc3b90.worker.js.map": "https://terra.rofl.wtf/e9619ee137f3ebdc3b90.worker.js.map",
     "f3bee59d08e412a84aa8.worker.js": "https://terra.rofl.wtf/f3bee59d08e412a84aa8.worker.js",
     "f3bee59d08e412a84aa8.worker.js.map": "https://terra.rofl.wtf/f3bee59d08e412a84aa8.worker.js.map",
     "index.html": "https://terra.rofl.wtf/index.html",
-    "precache-manifest.a6bf11a684f3613697f3c253a4fde991.js": "https://terra.rofl.wtf/precache-manifest.a6bf11a684f3613697f3c253a4fde991.js",
+    "precache-manifest.c2306e85aad40f9f5da3abc55195c5be.js": "https://terra.rofl.wtf/precache-manifest.c2306e85aad40f9f5da3abc55195c5be.js",
     "service-worker.js": "https://terra.rofl.wtf/service-worker.js",
     "static/css/2.d3e916ef.chunk.css.map": "https://terra.rofl.wtf/static/css/2.d3e916ef.chunk.css.map",
     "static/css/main.68db722b.chunk.css.map": "https://terra.rofl.wtf/static/css/main.68db722b.chunk.css.map",
-    "static/js/2.87187fea.chunk.js.LICENSE.txt": "https://terra.rofl.wtf/static/js/2.87187fea.chunk.js.LICENSE.txt",
+    "static/js/2.a550f78e.chunk.js.LICENSE.txt": "https://terra.rofl.wtf/static/js/2.a550f78e.chunk.js.LICENSE.txt",
     "static/media/index.css": "https://terra.rofl.wtf/static/media/roboto-latin-900-normal.bb1e4dc6.woff",
     "static/media/sheet-composite.enc.png": "https://terra.rofl.wtf/static/media/sheet-composite.enc.52e99977.png"
   },
   "entrypoints": [
     "static/js/runtime-main.da17bb8b.js",
     "static/css/2.d3e916ef.chunk.css",
-    "static/js/2.87187fea.chunk.js",
+    "static/js/2.a550f78e.chunk.js",
     "static/css/main.68db722b.chunk.css",
-    "static/js/main.34981df1.chunk.js"
+    "static/js/main.c4126aa7.chunk.js"
   ]
 }
