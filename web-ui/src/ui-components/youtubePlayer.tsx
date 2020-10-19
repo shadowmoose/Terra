@@ -75,6 +75,7 @@ export const YoutubePlayerInterface = observer(() => {
 
     const tools = (netMode.get() === NetworkMode.HOST && player) ?
         <div className={'ytPlayerHostToolbar'}>
+            <LoadVideoButton player={player} />
             <LoadPlaylistButton player={player} />
             <ShuffleButton player={player}/>
         </div> : null;
@@ -217,6 +218,40 @@ export const LoadPlaylistButton = (props: {player: any}) => {
             body={'Enter a YouTube Playlist:'}
             tooltip={'Playlist URL'}
             onSubmit={loadPlaylist}
+            onCancel={() => needPrompt(false)}
+            acceptText={'Load'}
+        />
+    </div>
+}
+
+export const LoadVideoButton = (props: {player: any}) => {
+    const [prompt, needPrompt] = React.useState(false);
+
+    const loadVideo = (input: string) => {
+        needPrompt(false);
+        if (!input) return;
+
+        const parser = new URLSearchParams(input);
+        let id = parser.get('v') || input;
+
+        if (id.includes('=')) id = input.split('=')[1];
+
+        props.player.cueVideoById(id);
+    };
+
+    return <div className={'ytPlayerVideoButton'}>
+        <Button
+            style={{color: 'rgb(14,142,191)', height: '100%'}}
+            onClick={() => needPrompt(true)}
+        >
+            Load Video
+        </Button>
+        <InputDialog
+            open={prompt}
+            title={'Enter a Video'}
+            body={'Enter a YouTube Video:'}
+            tooltip={'Video URL'}
+            onSubmit={loadVideo}
             onCancel={() => needPrompt(false)}
             acceptText={'Load'}
         />

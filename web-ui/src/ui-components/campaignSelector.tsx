@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from "react";
+import React from "react";
 import GameController from "../game/controllers/game";
 import {Meta, metadata} from "../game/db/metadata-db";
 import CampaignLoader from "../game/data/campaign-loader";
@@ -11,7 +11,7 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import {Button, Dialog, DialogContent, DialogTitle, Fab, InputLabel, Menu, MenuItem, Tooltip} from "@material-ui/core";
 import {netMode, NetworkMode} from "../game/net/peerconnection";
 import {InputDialog} from "./prompts";
-import {importDB, exportDB, importInto} from "dexie-export-import";
+import {importDB, exportDB} from "dexie-export-import";
 import {db} from "../game/db/database";
 import * as download from 'downloadjs';
 
@@ -107,19 +107,26 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
                     }
                 </p>
                 <Button
-                    variant="contained"
-                    color="default"
+                    variant="outlined"
+                    color="primary"
                     onClick={exportLocalDB}
                     startIcon={<SaveAltIcon />}
                 >
                    Save Backup
                 </Button>
-                <input id="backup-input" type="file" name="name" style={{display: "none"}} onChange={restoreLocalDB} />
+                <input
+                    id="backup-input"
+                    type="file"
+                    style={{display: "none"}}
+                    onChange={restoreLocalDB}
+                    accept={'application/json'}
+                />
                 <Button
-                    variant="contained"
+                    variant="outlined"
                     color="default"
                     onClick={() => document.getElementById('backup-input')?.click()}
                     startIcon={<RestoreIcon />}
+                    style={{marginLeft: '2px'}}
                 >
                     Restore
                 </Button>
@@ -208,7 +215,7 @@ async function exportLocalDB() {
     const blob = await exportDB(db, {prettyJson: true, progressCallback: console.log});
 
     // @ts-ignore
-    download(blob, `terra-backup.json`, 'text/json');
+    download(blob, `terra-backup.json`, 'application/json');
 }
 
 

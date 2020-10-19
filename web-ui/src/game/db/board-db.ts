@@ -12,6 +12,11 @@ export interface BoardWrapper {
 
 
 export async function save(campaignID: number, name: string, board: ProtoBoard) {
+    try {
+        console.log('Persistent storage enabled:', await navigator.storage.persist());
+    } catch (err) {
+        console.error(err);
+    }
     return db.boards.put({
         name,
         campaignID,
