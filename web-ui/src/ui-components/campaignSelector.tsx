@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ChangeEvent} from "react";
 import GameController from "../game/controllers/game";
 import {Meta, metadata} from "../game/db/metadata-db";
 import CampaignLoader from "../game/data/campaign-loader";
@@ -6,9 +6,14 @@ import {observer} from "mobx-react-lite";
 import Campaign from "../game/controllers/campaign";
 import SettingsIcon from '@material-ui/icons/Settings';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import RestoreIcon from '@material-ui/icons/Restore';
 import {Button, Dialog, DialogContent, DialogTitle, Fab, InputLabel, Menu, MenuItem, Tooltip} from "@material-ui/core";
 import {netMode, NetworkMode} from "../game/net/peerconnection";
 import {InputDialog} from "./prompts";
+import {importDB, exportDB, importInto} from "dexie-export-import";
+import {db} from "../game/db/database";
+import * as download from 'downloadjs';
 
 
 export const CampaignSelector = observer((props: {controller: GameController}) => {
@@ -101,6 +106,23 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
                             : 'Storage metrics unknown'
                     }
                 </p>
+                <Button
+                    variant="contained"
+                    color="default"
+                    onClick={exportLocalDB}
+                    startIcon={<SaveAltIcon />}
+                >
+                   Save Backup
+                </Button>
+                <input id="backup-input" type="file" name="name" style={{display: "none"}} onChange={restoreLocalDB} />
+                <Button
+                    variant="contained"
+                    color="default"
+                    onClick={() => document.getElementById('backup-input')?.click()}
+                    startIcon={<RestoreIcon />}
+                >
+                    Restore
+                </Button>
             </DialogContent>
         </Dialog>
         <InputDialog
@@ -176,4 +198,30 @@ function formatBytes(bytes: number, decimals = 2) {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+/**
+ * Export the full database as a JSON file.
+ */
+async function exportLocalDB() {
+    // @ts-ignore
+    const blob = await exportDB(db, {prettyJson: true, progressCallback: console.log});
+
+    // @ts-ignore
+    download(blob, `terra-backup.json`, 'text/json');
+}
+
+
+async function restoreLocalDB(ev: any) {
+    console.log(ev);
+    // @ts-ignore
+    const file = document.getElementById('backup-input')?.files[0];
+    if (file) {
+        console.log("Importing " + file.name);
+        await db.delete();
+        await importDB(file);
+        console.log("Import complete");
+        // @ts-ignore
+        window.location = window.location.href.split('#')[0];
+    }
 }

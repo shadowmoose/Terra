@@ -1,4 +1,4 @@
-import Dexie from "dexie";
+import {db} from './database';
 
 export interface UserData {
     id: number;
@@ -7,22 +7,6 @@ export interface UserData {
     lastSeen: number;
 }
 
-class UserDB extends Dexie {
-    users: Dexie.Table<any, UserData>;
-
-    constructor() {
-        super('user-db');
-
-        // Define tables and indexes
-        this.version(1).stores({
-            users: '++id, &username, *keyCodes, lastSeen'
-        });
-        this.users = this.table("users");
-    }
-}
-
-
-const db = new UserDB();
 
 export async function addNewUser(user: Partial<UserData>): Promise<UserData> {
     const data = {

@@ -1,3 +1,4 @@
+import {db} from './database';
 import Dexie from "dexie";
 import {ProtoBoard} from "../data/protobufs/proto-tiles";
 import * as encoder  from '../net/messageEncoder'
@@ -9,22 +10,6 @@ export interface BoardWrapper {
     data: Uint8Array;
 }
 
-
-class BoardDB extends Dexie {
-    boards: Dexie.Table<any, BoardWrapper>;
-
-    constructor() {
-        super('board-db');
-
-        // Define tables and indexes
-        this.version(1).stores({
-            boards: '&[campaignID+name]'
-        });
-        this.boards = this.table("boards");
-    }
-}
-
-const db = new BoardDB();
 
 export async function save(campaignID: number, name: string, board: ProtoBoard) {
     return db.boards.put({

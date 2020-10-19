@@ -1,23 +1,7 @@
-import Dexie from "dexie";
 import Campaign from "../controllers/campaign";
 import stripProxy from "../util/deproxy";
+import {db} from './database';
 
-class CampaignDB extends Dexie {
-    campaigns: Dexie.Table<any, Campaign>;
-
-    constructor() {
-        super('campaign-db');
-
-        // Define tables and indexes
-        this.version(1).stores({
-            campaigns: '++id, name'
-        });
-        this.campaigns = this.table("campaigns");
-    }
-}
-
-
-const db = new CampaignDB();
 db.campaigns.mapToClass(Campaign);
 
 export async function saveCampaign(camp: Campaign) {
