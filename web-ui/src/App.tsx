@@ -42,7 +42,7 @@ if (process.env.NODE_ENV !== 'development' && !window.location.href.includes('un
 
 const App = observer(() => {
     const desktop = useMediaQuery('(min-width:900px)');
-    const [needName, setNeedName] = React.useState(true);
+    const [needName, setNeedName] = React.useState(false);
     const setName = async (name: string) => {
         if (name && name.length) {
             setNeedName(false);
@@ -60,6 +60,8 @@ const App = observer(() => {
                currentUsername.set(name);
                setNeedName(false);
                await controller.start();
+            } else {
+                setNeedName(true);
             }
         })
     }, []);

@@ -65,11 +65,12 @@ export default class GameController {
      * Automatically starts the Client/Host connection if a URL Hash has been set already.
      */
     public async start() {
+        console.debug('Main game controller started.');
         this.canvasContainer.addLayer(this.terrain);
         this.canvasContainer.addLayer(this.entities);
 
         await waitForSpriteLoad;
-        console.debug('Sprite loader ready!');
+        console.debug('-- Sprite loader ready! --');
 
         this.canvasContainer.setCanvasSize(boardTileWidth * imageWidthPx, boardTileHeight * imageHeightPx);
 
@@ -130,6 +131,7 @@ export default class GameController {
      */
     public async loadBoard(name: string): Promise<boolean> {
         if (!this.campaign) return false;
+        await waitForSpriteLoad;
 
         this.campaign.loadedBoard = name;
         this.terrain.isBoardDirty = false;
