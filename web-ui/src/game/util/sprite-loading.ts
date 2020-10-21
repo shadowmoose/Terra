@@ -36,10 +36,10 @@ export const waitForSpriteLoad: Promise<any> = new Promise(res => {
 	const img = new Image();
 	img.onerror = err => {
 		console.error(err);
-		alert('Failed to waitForSpriteLoad sprite sheet! Cannot continue!');
+		alert('Failed to load sprite sheet! \nTry hard reloading the page (ctrl+F5).');
 	};
 	img.onload = () => {
-		sheet = unscramble(img, 24, 'GaiaV2SheetKey-mk1'); // Support the artists - buy from them!
+		sheet = unscramble(img, 24, process.env.REACT_APP_SPRITE_KEY); // Support the artists - buy from them!
 		res();
 	};
 	img.src = sheetSRC;

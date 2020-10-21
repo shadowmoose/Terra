@@ -1,6 +1,5 @@
 import {observable} from "mobx";
 import {db} from '../db/database';
-import {exportDB, importDB} from "dexie-export-import";
 
 class GoogleApi {
     private injected = false;
@@ -177,14 +176,9 @@ class GoogleApi {
         const driveUpdateTime = new Date(latest?.modifiedTime || 0).getTime();
 
         return this.downloadLatestBackup(latest).then(async res => {
-            console.log("Updating DB from Drive...");
-            await db.delete();
-            await importDB(res);
-            console.log("Drive Import complete");
-            localStorage['lastDriveUpdate'] = driveUpdateTime;
-            // @ts-ignore
-            window.location = window.location.href.split('#')[0];
-            return res;
+            await db.importData(res, () => {
+                localStorage['lastDriveUpdate'] = driveUpdateTime;
+            })
         });
     }
 
@@ -193,12 +187,7 @@ class GoogleApi {
      */
     public async uploadLocalDB() {
         // @ts-ignore
-        const blob = await exportDB(db, {
-            prettyJson: true,
-            progressCallback: (prog: any) => {
-                console.debug('Packing DB:', prog);
-            }
-        });
+        const blob = await db.toBlob();
 
         return this.upload(blob, 'application/json').then(async res => {
             const txt = await res.text();

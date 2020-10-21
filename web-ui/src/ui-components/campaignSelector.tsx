@@ -13,7 +13,6 @@ import CloudOffIcon from '@material-ui/icons/CloudOff';
 import {Button, Dialog, DialogContent, DialogTitle, Fab, InputLabel, Menu, MenuItem, Tooltip} from "@material-ui/core";
 import {netMode, NetworkMode} from "../game/net/peerconnection";
 import {InputDialog} from "./prompts";
-import {importDB, exportDB} from "dexie-export-import";
 import {db} from "../game/db/database";
 import * as download from 'downloadjs';
 import google from '../game/util/google-api';
@@ -233,22 +232,14 @@ function formatBytes(bytes: number, decimals = 2) {
  */
 async function exportLocalDB() {
     // @ts-ignore
-    const blob = await exportDB(db, {prettyJson: true, progressCallback: console.log});
+    const blob = await db.toBlob();
 
     // @ts-ignore
     download(blob, `terra-backup.json`, 'application/json');
 }
 
-async function restoreLocalDB(ev: any) {
-    console.log(ev);
+async function restoreLocalDB() {
     // @ts-ignore
     const file = document.getElementById('backup-input')?.files[0];
-    if (file) {
-        console.log("Importing " + file.name);
-        await db.delete();
-        await importDB(file);
-        console.log("Import complete");
-        // @ts-ignore
-        window.location = window.location.href.split('#')[0];
-    }
+    await db.importData(file);
 }

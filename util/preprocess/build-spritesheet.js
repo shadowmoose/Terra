@@ -5,6 +5,8 @@ const PNG = require('pngjs').PNG;
 const imgScramble = require('image-scramble');
 
 
+if(!process.env.REACT_APP_SPRITE_KEY) throw Error("No sprite key set in ENV!");
+
 const images = {};
 
 async function* getFiles(dir) {
@@ -130,7 +132,7 @@ const run = async(imageDir, outDir, uid, width=48, height=48) => {
 	return new Promise(res => {
 		imgScramble({
 			image: imageFile, // source
-			seed:'GaiaV2SheetKey-mk1', // seed
+			seed: process.env.REACT_APP_SPRITE_KEY, // seed
 			sliceSize: 24, // slice size
 			dest: `${outDir}/sheet-${uid}.enc.png` // dest
 		},function(err){

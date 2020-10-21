@@ -38,6 +38,7 @@ jobs:
         CI: ""
         PUBLIC_URL: "https://terra.rofl.wtf"
         REACT_APP_GOOGLE_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
+        REACT_APP_SPRITE_KEY: ${{ secrets.REACT_APP_SPRITE_KEY }}
 
     - name: Deploy to Web
       uses: peaceiris/actions-gh-pages@v3

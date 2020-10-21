@@ -2,6 +2,7 @@ import Dexie from "dexie";
 import {BoardWrapper} from "./board-db";
 import Campaign from "../controllers/campaign";
 import {UserData} from "./user-db";
+import {exportDB, importDB} from "dexie-export-import";
 
 
 class DB extends Dexie {
@@ -24,6 +25,32 @@ class DB extends Dexie {
         this.campaigns = this.table("campaigns");
         this.metadata = this.table("metadata");
         this.users = this.table("users");
+    }
+
+    /**
+     * Replaces the database with the given Blob data, then reloads the page.
+     * If cb is given, waits for the callback before reloading.
+     * @param data
+     * @param cb
+     */
+    async importData(data: Blob, cb?: Function) {
+        console.debug('Restoring database from blob...');
+        await this.delete();
+        await importDB(data);
+        console.log("Import complete");
+        if (cb) await cb();
+        // @ts-ignore
+        window.location = window.location.href.split('#')[0];
+    }
+
+    async toBlob() {
+        // @ts-ignore
+        return await exportDB(this, {
+            prettyJson: false,
+            progressCallback: (progress: any) => {
+                console.debug('\t+ Packing DB:', progress);
+            }
+        });
     }
 }
 
