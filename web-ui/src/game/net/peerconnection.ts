@@ -157,7 +157,7 @@ export async function openHost() {
     sb.host();
 }
 
-export async function kill(): Promise<void> {
+export function kill(): void {
     if (sb) {
         clients.forEach(p => {
             p.close();
@@ -165,8 +165,9 @@ export async function kill(): Promise<void> {
         });
         netMode.set(NetworkMode.UNKNOWN);
         netStatus.set(NetworkStatus.IDLE);
-        sb.kill();
+        sb.kill(undefined, true);
         sb = null;
+        console.debug('Killed networking stack.');
     }
 }
 
@@ -175,7 +176,7 @@ export async function kill(): Promise<void> {
  * @param mode
  */
 async function setMode(mode: NetworkMode) {
-    await kill();
+    kill();
     netMode.set(mode);
 }
 

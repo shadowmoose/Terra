@@ -93,10 +93,13 @@ export default class GameController {
         window.addEventListener('popstate', () => {
             window.history.pushState(null, document.title, window.location.href);
         });
+        window.addEventListener("beforeunload", () => {
+            connection.kill();
+        })
     }
 
     public async startHost(): Promise<void> {
-        await connection.kill();
+        connection.kill();
         this.lobby.pendingLogins.forEach(pu => this.lobby.rejectUser(pu));
 
         console.log('Hosting lobby at:', await getMyID());
@@ -109,7 +112,7 @@ export default class GameController {
     }
 
     public async startClient(connectID: string) {
-        await connection.kill();
+        connection.kill();
         this.lobby.pendingLogins.forEach(pu => this.lobby.rejectUser(pu));
 
         console.log('Connecting to host:', connectID);
