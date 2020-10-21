@@ -95,6 +95,7 @@ export default class GameController {
         });
         window.addEventListener("beforeunload", () => {
             connection.kill();
+            this.ready = false;
         })
     }
 

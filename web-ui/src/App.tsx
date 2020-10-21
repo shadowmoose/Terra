@@ -77,7 +77,7 @@ const App = observer(() => {
             onSubmit={setName}
             onCancel={setName}
         />;
-    } else if (!controller.ready && connection.netMode.get() === NetworkMode.UNKNOWN) {
+    } else if (!controller.ready) {
         content = <Backdrop open={true} transitionDuration={0}>
             <Typography variant="h1" component="h2" gutterBottom>
                 Loading <CircularProgress color="inherit" />

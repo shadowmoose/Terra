@@ -131,7 +131,7 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
                 >
                     Restore
                 </Button>
-                <h2>Google Drive:</h2>
+                <DialogTitle>Google Drive:</DialogTitle>
                 <Button
                     variant="contained"
                     color="primary"
