@@ -16,7 +16,7 @@ import {InputDialog} from "./prompts";
 import {importDB, exportDB} from "dexie-export-import";
 import {db} from "../game/db/database";
 import * as download from 'downloadjs';
-import google from './google-api';
+import google from '../game/util/google-api';
 
 
 export const CampaignSelector = observer((props: {controller: GameController}) => {
@@ -238,29 +238,6 @@ async function exportLocalDB() {
     // @ts-ignore
     download(blob, `terra-backup.json`, 'application/json');
 }
-
-/**
- * Export the full database as a JSON file.
- */
-async function sendDBToGoogle() {
-    // @ts-ignore
-    const blob = await exportDB(db, {prettyJson: true, progressCallback: console.log});
-
-    google.upload(blob, 'application/json').then(async res => {
-        console.log('Upload result:', await res.text());
-    }).catch(err => {
-        console.error('Upload error.');
-        console.error(err);
-    });
-}
-
-// @ts-ignore
-window.google = {
-    upload: sendDBToGoogle.bind(google),
-    browse: google.listFiles.bind(google),
-    latest: google.getLatestBackup.bind(google),
-    download: google.downloadLatestBackup.bind(google)
-};
 
 async function restoreLocalDB(ev: any) {
     console.log(ev);
