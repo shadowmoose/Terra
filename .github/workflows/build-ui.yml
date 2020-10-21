@@ -35,9 +35,10 @@ jobs:
         cd web-ui
         npm run build
       env:
-       CI: ""
-       PUBLIC_URL: "https://terra.rofl.wtf"
-        
+        CI: ""
+        PUBLIC_URL: "https://terra.rofl.wtf"
+        REACT_APP_GOOGLE_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
+
     - name: Deploy to Web
       uses: peaceiris/actions-gh-pages@v3
       with:

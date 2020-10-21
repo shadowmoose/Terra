@@ -8,12 +8,15 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import RestoreIcon from '@material-ui/icons/Restore';
+import BackupIcon from '@material-ui/icons/Backup';
+import CloudOffIcon from '@material-ui/icons/CloudOff';
 import {Button, Dialog, DialogContent, DialogTitle, Fab, InputLabel, Menu, MenuItem, Tooltip} from "@material-ui/core";
 import {netMode, NetworkMode} from "../game/net/peerconnection";
 import {InputDialog} from "./prompts";
 import {importDB, exportDB} from "dexie-export-import";
 import {db} from "../game/db/database";
 import * as download from 'downloadjs';
+import google from '../game/util/google-api';
 
 
 export const CampaignSelector = observer((props: {controller: GameController}) => {
@@ -22,7 +25,6 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
     const [promptNew, setPromptNew] = React.useState(false);
     const [campaignList, setList] = React.useState<Campaign[]>([]);
     const [storage, setStorage] = React.useState({q: 1, u: 0});
-
 
     const selectCampaign = React.useMemo(() => {
         return (camp: Campaign) => {
@@ -130,6 +132,25 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
                 >
                     Restore
                 </Button>
+                <h2>Google Drive:</h2>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => google.promptSignIn()}
+                    startIcon={<BackupIcon />}
+                    style={{display: google.isSignedIn ? 'none':''}}
+                >
+                    Sign In
+                </Button>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => google.signOut()}
+                    startIcon={<CloudOffIcon />}
+                    style={{display: google.isSignedIn ? '':'none'}}
+                >
+                    Sign Out
+                </Button>
             </DialogContent>
         </Dialog>
         <InputDialog
@@ -217,7 +238,6 @@ async function exportLocalDB() {
     // @ts-ignore
     download(blob, `terra-backup.json`, 'application/json');
 }
-
 
 async function restoreLocalDB(ev: any) {
     console.log(ev);
