@@ -1,5 +1,7 @@
 import {observable} from "mobx";
 import notifications from "../../ui-components/notifications";
+import {Button} from "@material-ui/core";
+import React from "react";
 
 
 export interface PendingUser {
@@ -42,7 +44,15 @@ export default class Lobby {
             this.pendingLogins.push(pending);
 
             if (!this.blacklist.has(keyCode)) {
-                notifications.warning(`Unknown device (${keyCode}) wants to join as "${username}".`, {});
+                const tID = notifications.warning(`Unknown device (${keyCode}) wants to join as "${username}".`, {
+                    preventDuplicate: true,
+                    action: <Button
+                        variant={"outlined"}
+                        onClick={()=>{notifications.close(tID); this.approveUser(pending)}}
+                    >
+                        Approve
+                    </Button>
+                });
                 this.notify('New Unknown User', `Unknown device (${keyCode}) wants to join as "${username}".`);
             }
         });

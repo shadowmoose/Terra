@@ -8,6 +8,7 @@ import hotkeys from "hotkeys-js";
 import google from '../game/util/google-api';
 import notifications from "./notifications";
 import ConfirmPrompt from "./prompts";
+import Button from "@material-ui/core/Button";
 
 
 export const BoardSaveButton = observer( (props: {controller: GameController}) => {
@@ -21,9 +22,18 @@ export const BoardSaveButton = observer( (props: {controller: GameController}) =
         return async () => {
             if (netMode.get() !== NetworkMode.HOST) return;
             setSaving(true);
-            await props.controller.saveBoard();
-            if (google.isSignedIn) {
-                await google.uploadLocalDB();
+            try {
+                await props.controller.saveBoard();
+                if (google.isSignedIn) {
+                    await google.uploadLocalDB();
+                }
+                notifications.success(`Saved ${props.controller.campaign?.loadedBoard}!`, {
+                    autoHideDuration: 2000,
+                    preventDuplicate: true
+                });
+            } catch (err) {
+                console.error(err);
+                notifications.error(`Failed to save! ${err.message}`);
             }
             setSaving(false);
         }
@@ -40,14 +50,17 @@ export const BoardSaveButton = observer( (props: {controller: GameController}) =
                     notifications.info('Local save up to date!');
                 }
             } else {
-                notifications.warning('Not syncing with Google Drive.');
+                notifications.warning('Not (optionally) syncing with Google Drive.', {
+                    action: <Button onClick={()=>google.promptSignIn()} variant={'outlined'}>Connect</Button>,
+                    autoHideDuration: 10000
+                });
             }
         })
     }, [])
 
     React.useEffect(() => {
         // Enable hotkey for saving:
-        hotkeys('ctrl+s', (event, handler) => {
+        hotkeys('ctrl+s', (event) => {
             event.preventDefault();
             event.stopPropagation();
             saveBoard();

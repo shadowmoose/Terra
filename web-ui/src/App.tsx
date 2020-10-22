@@ -10,8 +10,6 @@ import ControlMenu from "./ui-components/controlMenu";
 import {observer} from "mobx-react-lite";
 import ConnectionOverlay from "./ui-components/connectionOverlay";
 import {SnackbarProvider} from 'notistack';
-import * as connection from "./game/net/peerconnection";
-import {NetworkMode} from "./game/net/peerconnection";
 import {SnackbarUtilsConfigurator} from "./ui-components/notifications";
 import {Meta, metadata, currentUsername} from './game/db/metadata-db';
 import {CampaignSelector} from "./ui-components/campaignSelector";

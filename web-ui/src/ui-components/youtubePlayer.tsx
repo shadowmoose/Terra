@@ -231,12 +231,13 @@ export const LoadVideoButton = (props: {player: any}) => {
         needPrompt(false);
         if (!input) return;
 
-        const parser = new URLSearchParams(input);
-        let id = parser.get('v') || input;
+        const parser = new URLSearchParams(input.split('?')[1] || '');
+        let id = parser.get('v') || input.substring(input.lastIndexOf('/')+1, input.indexOf('?'));
+        let time = parseInt(parser.get('t') || '0');
 
-        if (id.includes('=')) id = input.split('=')[1];
+        if (id.includes('/')) id = input.split('/')[input.split('/').length-1];
 
-        props.player.cueVideoById(id);
+        props.player.cueVideoById(id, time);
     };
 
     return <div className={'ytPlayerVideoButton'}>

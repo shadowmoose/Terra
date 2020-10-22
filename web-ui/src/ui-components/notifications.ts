@@ -1,4 +1,4 @@
-import { useSnackbar, WithSnackbarProps, OptionsObject } from 'notistack'
+import {useSnackbar, WithSnackbarProps, OptionsObject, SnackbarKey} from 'notistack'
 import React from 'react'
 
 let snackbarRef: WithSnackbarProps;
@@ -11,18 +11,21 @@ export const SnackbarUtilsConfigurator: React.FC = () => {
 
 export default {
     success(msg: string, options: OptionsObject = {}) {
-        this.toast(msg, { ...options, variant: 'success' })
+        return this.toast(msg, { ...options, variant: 'success' })
     },
     warning(msg: string, options: OptionsObject = {}) {
-        this.toast(msg, { ...options, variant: 'warning' })
+        return this.toast(msg, { ...options, variant: 'warning' })
     },
     info(msg: string, options: OptionsObject = {}) {
-        this.toast(msg, { ...options, variant: 'info' })
+        return this.toast(msg, { ...options, variant: 'info' })
     },
     error(msg: string, options: OptionsObject = {}) {
-        this.toast(msg, { ...options, variant: 'error' })
+        return this.toast(msg, { ...options, variant: 'error' })
     },
     toast(msg: string, options: OptionsObject = {}) {
-        snackbarRef.enqueueSnackbar(msg, options)
+        return snackbarRef.enqueueSnackbar(msg, options)
+    },
+    close(key: SnackbarKey) {
+        return snackbarRef.closeSnackbar(key)
     }
 }

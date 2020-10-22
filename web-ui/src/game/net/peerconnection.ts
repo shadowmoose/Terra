@@ -145,6 +145,7 @@ export async function openHost() {
             }
             cli.verified = true;
             clients.add(cli);
+            notifications.info(`User "${cli.userData.username}" has joined.`, {preventDuplicate: true});
         } catch (err) {
             console.error(err);
             cli.close();

@@ -51,6 +51,7 @@ const LobbyInterface = observer((props: {lobby: Lobby}) => {
     return <div className={'cont'}>
         <form className={classes.root} noValidate autoComplete="off" onSubmit={e => e.preventDefault()}>
             <h2>Lobby</h2>
+            <a href={window.location.href} target='_blank' rel="noopener noreferrer">Invite Link</a>
             <PendingList lobby={props.lobby} />
             <UserList />
         </form>
@@ -115,10 +116,12 @@ const UserList =  observer((props: {}) => {
         </MenuItem>
     });
 
-    if (!eles.length) return null;
+    if (!eles.length) return <div>
+        <h5>No users online</h5>
+    </div>;
 
     return <div>
-        <h4 style={{marginBottom: '5px'}}>Online:</h4>
+        <h4 style={{marginBottom: '1px'}}>Online:</h4>
         <MenuList>
             {eles}
         </MenuList>
