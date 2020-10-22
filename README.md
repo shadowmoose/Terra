@@ -1,4 +1,4 @@
-# ![Terra](./web-ui/public/terra-logo.png)
+# [![Terra](./web-ui/public/terra-logo.png)](https://terra.rofl.wtf)
 [![Latest Release](https://github.com/shadowmoose/Terra/workflows/Build%20UI/badge.svg)](https://github.com/shadowmoose/Terra/actions?query=workflow%3A%22Build+UI%22) [![Unstable Build](https://github.com/shadowmoose/Terra/workflows/Build%20Unstable/badge.svg)](https://github.com/shadowmoose/Terra/actions?query=workflow%3A%22Build+Unstable%22) ![Lines of Code](https://raw.githubusercontent.com/shadowmoose/Terra/image-data/loc-badge.svg)
 
 2D Tabletop sprite-based world editor.
