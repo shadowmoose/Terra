@@ -13,3 +13,5 @@ __Latest Unstable Build:__ https://terra.rofl.wtf/unstable/
 __Project Status:__ https://github.com/shadowmoose/Terra/projects/1
 
 __More Info:__ https://github.com/shadowmoose/Terra/wiki
+
+__Privacy Policy:__ https://terra.rofl.wtf/privacy-policy.md
