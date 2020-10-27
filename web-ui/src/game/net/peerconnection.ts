@@ -7,8 +7,7 @@ import PromiseStream from "../util/promiseStream";
 import {PreCheck} from "./prechecks/precheck";
 import {UserData} from "../db/user-db";
 import {PingPacket} from "./packets/util-packets";
-import {Switchboard} from "switchboard.js/build/module/switchboard"; // TODO: Clean this up when lib is done.
-import {ConnectedPeer} from "switchboard.js/build/module/tracker";
+import {Switchboard, ConnectedPeer} from "switchboard.js";
 import {metadata, Meta} from "../db/metadata-db";
 
 export enum NetworkStatus {
