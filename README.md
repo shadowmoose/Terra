@@ -5,6 +5,8 @@
 
 Connect with multiple friends simply by sharing a link, and start running your game!
 
+All games are directly peer-to-peer, which means there are no accounts required to jump right in.
+
 
 __Public Build:__ https://terra.rofl.wtf/
 
