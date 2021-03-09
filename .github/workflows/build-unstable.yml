@@ -30,6 +30,7 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: web-ui
+          useLockFile: true
 
       - name: Build
         run: |
