@@ -5,6 +5,7 @@ import TerrainEraseHandler from "../net/handlers/terrain-erase-handler";
 import {ProtoBoard} from "../data/protobufs/proto-tiles";
 import {Tile} from "../data/interfaces/tile";
 import * as TERRAIN from '../renderer/ui-components/ui-terrain';
+import {GRID_DIMENSIONS} from "../renderer/ui-data/globals";
 
 
 export default class Terrain{
@@ -41,7 +42,7 @@ export default class Terrain{
      * @param y
      */
     public drawAt(x: number, y: number): boolean {
-        console.log(this.selectedSprite);
+        if (x < 0 || x > GRID_DIMENSIONS-1 || y < 0 || y > GRID_DIMENSIONS-1) return false;
         if (this.selectedSprite) {
             return this.placeAt(x, y, new Tile(this.selectedSprite), true);
         }

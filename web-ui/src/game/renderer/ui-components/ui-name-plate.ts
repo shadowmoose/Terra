@@ -1,13 +1,11 @@
-import {Text, TextStyle} from 'pixi.js'
+import {Graphics, Text, TextStyle} from 'pixi.js'
 import * as util from '../ui-data/ui-util';
 import {OVERLAY_DEPTHS, OVERLAY_LAYER} from "../ui-data/globals";
 
 const defaultStyle = {
     fontFamily: "Helvetica",
     fontSize: 24,
-    fill: "#000000",
-    stroke: '#FFFFFF',
-    strokeThickness: 3,
+    fill: "#000000"
 };
 
 const plates = new Set<UiNamePlate>();
@@ -24,6 +22,7 @@ export function shiftPlates() {
                 plate.position.set(plate.x, plate.y -= (plate.height+1));
             }
         });
+        plate.moveBkg();
     })
 }
 
@@ -31,15 +30,16 @@ export class UiNamePlate extends Text{
     public dx = 0;
     public dy = 0;
     private added = false;
+    private bkg = new Graphics();
 
     constructor(text: string) {
         super(text, new TextStyle(defaultStyle));
         this.resolution = 8;
         this.zIndex = OVERLAY_DEPTHS.NAMEPLATE;
+        this.roundPixels = true;
     }
 
     public setColor(color: string) {
-        console.log('plat color:', color)
         this.style.fill = color;
     }
 
@@ -56,11 +56,20 @@ export class UiNamePlate extends Text{
         if (!this.added) {
             this.added = true;
             OVERLAY_LAYER.addChild(this);
+            OVERLAY_LAYER.addChild(this.bkg);
             plates.add(this);
         }
         this.dx = x - this.width/3;
         this.dy = y - this.height;
         shiftPlates();
+    }
+
+    public moveBkg() {
+        this.bkg.clear();
+        this.bkg.beginFill(0xFFFFFF, 0.5);
+        this.bkg.drawRect(0,0,this.width+4, this.height+4);
+        this.bkg.endFill();
+        this.bkg.position.set(this.position.x-2, this.position.y-2);
     }
 
     /**
@@ -73,6 +82,11 @@ export class UiNamePlate extends Text{
             texture: true,
             baseTexture: true
         });
+        this.bkg.destroy({
+            texture: true,
+            baseTexture: true,
+            children: true
+        })
 
         shiftPlates();
     }

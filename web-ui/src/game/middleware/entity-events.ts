@@ -3,7 +3,7 @@ import EntityLayer, {Entity} from "../controllers/entities";
 import {EVENT_STREAM, GridPoint} from "../renderer/ui-data/ui-event-stream";
 import {UiMarker} from "../renderer/ui-components/ui-marker";
 import {toggleViewportInput} from "../renderer";
-import {DEFAULT_PEN_COLOR, setColor} from "../renderer/ui-components/ui-tooltip";
+import {DEFAULT_PEN_COLOR, setColor, setSize} from "../renderer/ui-components/ui-tooltip";
 
 
 export default class EntityMiddleware extends Middleware {
@@ -18,6 +18,7 @@ export default class EntityMiddleware extends Middleware {
     }
 
     register(): void {
+        setSize(1);
         toggleViewportInput(true);
         this.listener(EVENT_STREAM.on('mouse-up', () => {
             this.clearMovers();
@@ -29,6 +30,7 @@ export default class EntityMiddleware extends Middleware {
                 this.ent = trg;
                 this.entities.selected = trg;
                 toggleViewportInput(false);
+                this.addPoint(ev.tx, ev.ty);
             }
         }));
 
@@ -71,7 +73,7 @@ export default class EntityMiddleware extends Middleware {
             this.moveTrackers.splice(idx, this.moveTrackers.length).forEach(t => t.remove());
         }
         this.movePoints.push({tx: x, ty: y});
-        this.moveTrackers.push(new UiMarker(this.pathLength()+'ft').place(x, y));
+        this.moveTrackers.push(new UiMarker((this.pathLength()*5)+'ft').place(x, y));
         this.checkDiag();
     }
 
@@ -85,6 +87,7 @@ export default class EntityMiddleware extends Middleware {
             // Corner we can cut!
             this.movePoints.splice(this.movePoints.length-2, 1);
             this.moveTrackers.splice(this.moveTrackers.length-2, 1).forEach(t => t.remove());
+            this.moveTrackers[this.moveTrackers.length-1].setText((this.pathLength()*5) + 'ft');
         }
     }
 
