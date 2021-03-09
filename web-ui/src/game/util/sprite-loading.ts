@@ -153,7 +153,7 @@ export class Sprite implements SpriteInterface {
 
 		return imgs.map((img, idx) => {
 			return {
-				uid: this.mkKey(idx),
+				uid: this.mkKey(this.idx < 0 ? idx : this.idx),
 				atlas: waitForSpriteLoad,
 				px: img.x,
 				py: img.y,

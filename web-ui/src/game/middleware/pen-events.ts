@@ -24,6 +24,7 @@ export default class PenMiddleware extends Middleware {
     }
 
     register(): void {
+        setSize(this.penSize);
         toggleViewportInput(false);
 
         this.listener(EVENT_STREAM.on('mouse-down', ev => {
@@ -77,7 +78,6 @@ export default class PenMiddleware extends Middleware {
 
     draw(ev: GridPoint): boolean {
         if (this.state !== PEN_STATE.NONE) {
-            console.log('pen:', this.state, ev);
             switch (this.state) {
                 case PEN_STATE.ERASE:
                     this.box(ev.tx, ev.ty, this.terrain.eraseAt.bind(this.terrain));
