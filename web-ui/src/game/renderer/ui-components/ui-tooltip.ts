@@ -37,6 +37,10 @@ export function setColor(color: number) {
     draw();
 }
 
+export function setVisible(visible: boolean) {
+    tooltip.visible = visible;
+}
+
 function draw() {
     tooltip.clear();
     tooltip.lineStyle(4, c);

@@ -2,9 +2,9 @@ import { Graphics } from "pixi.js";
 import {GRID_TILE_PX, OVERLAY_DEPTHS, OVERLAY_LAYER} from "../ui-data/globals";
 
 export enum SHAPE_TYPES {
-    circle,
-    rectangle,
-    cone
+    circle = 'circle',
+    rectangle = 'rectangle',
+    cone = 'cone'
 }
 
 
@@ -42,6 +42,12 @@ export class UiShape {
     size(widthTiles: number, heightTiles = -1) {
         this._width = widthTiles * GRID_TILE_PX;
         this._height = (heightTiles > -1 ? heightTiles : widthTiles) * GRID_TILE_PX;
+        this.redraw();
+        return this;
+    }
+
+    sizePx(px: number) {
+        this._width = this._height = px;
         this.redraw();
         return this;
     }
@@ -121,6 +127,12 @@ export class UiShape {
         return this;
     }
 
+    setPosPx(px: number, py: number) {
+        this.setPos(px/GRID_TILE_PX, py/GRID_TILE_PX);
+        this.gr.position.set(px, py);
+        return this;
+    }
+
     private slideCone(px: number, py: number) {
         let nx = this.tx * GRID_TILE_PX;
         let ny = this.ty * GRID_TILE_PX;
@@ -132,6 +144,7 @@ export class UiShape {
 
     setRotation(radians: number) {
         this.gr.rotation = radians;
+        return this;
     }
 
     /** Current rotation, in radians. */
@@ -144,7 +157,34 @@ export class UiShape {
         return {
             px: this.gr.position.x,
             py: this.gr.position.y,
+            tx: this.tx,
+            ty: this.ty
         };
+    }
+
+    get dimensions () {
+        return {
+            tw: this._width/GRID_TILE_PX,
+            th: this._height/GRID_TILE_PX
+        }
+    }
+
+    getGraphicDetails() {
+        return {
+            border: this._color,
+            fill: this._fill,
+            fillAlpha: this._alpha,
+            thickness: this._thickness
+        };
+    }
+
+    getType() {
+        return this._type;
+    }
+
+    onClick(cb: any) {
+        this.gr.interactive = true;
+        this.gr.on('click', cb);
     }
 
     /**
@@ -166,7 +206,10 @@ export class UiShape {
         return this;
     }
 
-    destroy() {
+    /**
+     * Destroy this Shape, cleaning up any GL resources it uses.
+     */
+    remove() {
         OVERLAY_LAYER.removeChild(this.gr);
         this.gr.destroy({
             children: true,

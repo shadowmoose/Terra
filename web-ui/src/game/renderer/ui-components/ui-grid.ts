@@ -10,6 +10,7 @@ export const grid = new PIXI.TilingSprite(makeGridTexture(), 100, 100);
 grid.roundPixels = false;
 grid.position.set(0,0);
 grid.visible = true;
+grid.alpha = 0.5;
 
 /**
  * Extremely naive implementation to find optimal repeating texture size.

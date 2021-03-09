@@ -30,7 +30,7 @@ export class UiEntity extends AnimatedSprite {
             ENTITY_LAYER.addChild(this);
         }
         this.position.set(tileX * GRID_TILE_PX, tileY * GRID_TILE_PX);
-        this.plate.place(this.position.x, this.position.y);
+        this.plate.place(this.position.x + GRID_TILE_PX/2, this.position.y);
         return this;
     }
 
@@ -41,7 +41,6 @@ export class UiEntity extends AnimatedSprite {
     remove() {
         if (!this.destroyed) {
             this.destroyed = true;
-            delete entities[this.id];
             this.stop();
             this.destroy();
             this.plate.remove();
@@ -110,8 +109,9 @@ export async function getEntity(id: string) {
  */
 export async function releaseEntity(id: string) {
     if (entities[id]) {
-        const ent = await entities[id];
-        ent.remove();
+        const prom = entities[id];
+        delete entities[id];
+        (await prom).remove();
     } else {
         console.warn("Tried to delete missing entity:", id);
     }

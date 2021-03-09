@@ -306,14 +306,17 @@ export class Client {
  * If `requireHost` is true, will only send while we are hosting.
  * @param packet
  * @param requireHost
+ * @param skip
  */
-export async function broadcast(packet: ProtoWrapper, requireHost: boolean) {
+export async function broadcast(packet: ProtoWrapper, requireHost: boolean, skip?: Client) {
     if (requireHost && netMode.get() !== NetworkMode.HOST) {
         return;
     }
     const data = await encoder.encode(packet)
 
-    clients.forEach(c => c.sendBuffer(data));
+    clients.forEach(c => {
+        if (c !== skip) c.sendBuffer(data)
+    });
 }
 
 export function isHost() {

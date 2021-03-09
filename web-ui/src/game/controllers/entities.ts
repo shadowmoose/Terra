@@ -83,6 +83,10 @@ export default class EntityLayer {
         return false;
     }
 
+    public getEntity(id: string) {
+        return this.entities[id];
+    }
+
     public updateEntity(id: string, props: Partial<Entity>, sendUpdate: boolean=true) {
         const existing = this.entities[id];
         if (existing) {

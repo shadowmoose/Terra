@@ -20,9 +20,6 @@ export default class EntityMiddleware extends Middleware {
     register(): void {
         setSize(1);
         toggleViewportInput(true);
-        this.listener(EVENT_STREAM.on('mouse-up', () => {
-            this.clearMovers();
-        }));
 
         this.listener(EVENT_STREAM.on('mouse-down', ev => {
             const trg = this.entities.getEntityList().find(ent => ent.canMove() && ent.x === ev.tx && ent.y === ev.ty);
@@ -35,6 +32,7 @@ export default class EntityMiddleware extends Middleware {
         }));
 
         this.listener(EVENT_STREAM.on('mouse-up', () => {
+            this.clearMovers();
             if (this.ent) {
                 this.ent = null;
                 toggleViewportInput(true);

@@ -24,6 +24,7 @@ import MediaSyncHandler from "../net/handlers/media-sync-handler";
 import MediaSync from "../net/prechecks/media-sync";
 import {ProtoSprite} from "../data/protobufs/proto-sprite";
 import * as RENDER from '../renderer';
+import MeasureHandler from "../net/handlers/measure-handler";
 
 export default class GameController {
     public terrain: Terrain;
@@ -51,7 +52,8 @@ export default class GameController {
             new EntityUpdateHandler(this.entities),
             new PingHandler(),
             new BoardReloadHandler(this),
-            new MediaSyncHandler(this)
+            new MediaSyncHandler(this),
+            new MeasureHandler(this)
         ];
     }
 

@@ -16,6 +16,7 @@ import {NetworkMode} from "../game/net/peerconnection";
 import UIEntityTool from "../ui-tools/ui-entity-tool";
 import UILobbyTool from "../ui-tools/ui-lobby-tool";
 import hotkeys from 'hotkeys-js';
+import UIMeasuretool from "../ui-tools/ui-measure-tool";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -102,7 +103,8 @@ const ControlMenu = observer((props: {controller: GameController, forMobile: boo
             new UIPenTool(props.controller),
             new UIEraserTool(props.controller),
             new UIEntityTool(props.controller),
-            new UILobbyTool(props.controller)
+            new UILobbyTool(props.controller),
+            new UIMeasuretool(props.controller)
         ];
 
         setTools(newTools);

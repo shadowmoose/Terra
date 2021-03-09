@@ -3,8 +3,8 @@ import * as util from '../ui-data/ui-util';
 import {OVERLAY_DEPTHS, OVERLAY_LAYER} from "../ui-data/globals";
 
 const defaultStyle = {
-    fontFamily: "Helvetica",
-    fontSize: 24,
+    fontFamily: "Arial Black",
+    fontSize: 18,
     fill: "#000000"
 };
 
@@ -14,12 +14,12 @@ const plates = new Set<UiNamePlate>();
  * Replace all plates, and shift them all to not overlap.
  */
 export function shiftPlates() {
-    plates.forEach(plate => {
+    Array.from(plates).sort((p1, p2) => p1.dy - p2.dy).forEach(plate => {
         plate.position.set(plate.dx, plate.dy);
         plates.forEach(p => {
             if (p === plate) return;
             while (util.collides(plate, p)) {
-                plate.position.set(plate.x, plate.y -= (plate.height+1));
+                plate.position.set(plate.dx, plate.y -= (plate.height+2));
             }
         });
         plate.moveBkg();
@@ -40,7 +40,7 @@ export class UiNamePlate extends Text{
     }
 
     public setColor(color: string) {
-        this.style.fill = color;
+        if (this.style) this.style.fill = color;
     }
 
     public setName(name: string) {
@@ -59,8 +59,9 @@ export class UiNamePlate extends Text{
             OVERLAY_LAYER.addChild(this.bkg);
             plates.add(this);
         }
-        this.dx = x - this.width/3;
-        this.dy = y - this.height;
+        this.calculateBounds();
+        this.dx = Math.round(x - this.width/2);
+        this.dy = Math.round(y - this.height);
         shiftPlates();
     }
 

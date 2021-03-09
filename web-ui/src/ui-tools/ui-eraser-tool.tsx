@@ -36,8 +36,6 @@ export default class UIEraserTool extends UITool {
 }
 
 const EraserSizeSlider = observer((props: {pen: PenMiddleware}) => {
-    console.log('PS:', props.pen.penSize)
-
     return <div>
         <Typography id="discrete-slider" gutterBottom>
             Eraser Size: {props.pen.penSize}

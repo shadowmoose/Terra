@@ -54,7 +54,7 @@ export default class Subscribable {
      * @param useHistory If existing historic data should be returned.
      * @returns A function which, when called, will unregister the callback.
      */
-    public on(event: string, callback: any, useHistory = true) {
+    public on(event: string, callback: any, useHistory = false) {
         this.events[event] = this.events[event] || new Set();
         this.events[event].add(callback);
 
@@ -79,7 +79,7 @@ export default class Subscribable {
      * @param useHistory
      * @see {@link on} for the available specific events.
      */
-    public once(event: string, callback: Function, useHistory = true) {
+    public once(event: string, callback: Function, useHistory = false) {
         const unsub = this.on(event, (val: any) => {
             unsub();
             callback(val)

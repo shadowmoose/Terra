@@ -19,10 +19,6 @@ import {InputDialog} from "./ui-components/prompts";
 import {YoutubePlayerInterface} from "./ui-components/youtubePlayer";
 
 
-if (!('PointerEvent' in window)) {
-    alert('This browser does not support pointer events - please use a different one!');
-}
-
 const controller = new GameController();
 
 if (process.env.NODE_ENV !== 'development' && !window.location.href.includes('unstable')) {
@@ -30,7 +26,7 @@ if (process.env.NODE_ENV !== 'development' && !window.location.href.includes('un
     function noop() {}
     const oldConsole = Object.assign({}, console);
     // @ts-ignore
-    window.restoreLog = () => {
+    window.debugRestoreLog = () => {
         Object.assign(console, oldConsole);
     };
     console.debug = noop;

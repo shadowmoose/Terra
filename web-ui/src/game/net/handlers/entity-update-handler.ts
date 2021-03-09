@@ -41,17 +41,18 @@ export default class EntityUpdateHandler extends Handler {
                 if (!this.entities.entityIsOwned(ent.id, client.userData.username)) {
                     throw Error('Client attempted to edit entity the do not own!')
                 }
-                this.entities.updateEntity(ent.id, {
+                const exists = this.entities.updateEntity(ent.id, {
                     x: ent.x,
                     y: ent.y
-                });
+                }, false);
+                if (exists) EntityUpdateHandler.sendUpdate(this.entities.getEntity(ent.id), client);
             }
         } else {
             throw Error(`Client sent invalid Entity packet! ${typeof packet}`)
         }
     }
 
-    static sendUpdate(entity: Entity) {
+    static sendUpdate(entity: Entity, skip?: Client) {
         if (!entity.canMove() || !entity.visible) return;
         const proto = new ProtoEntity().assign({
             ...entity,
@@ -59,7 +60,7 @@ export default class EntityUpdateHandler extends Handler {
             owners: Array.from(entity.owners)
         });
         const packet = new EntityUpdatePacket().assign({entities: [proto]});
-        broadcast(packet, false);
+        broadcast(packet, false, skip);
     }
 
     static sendDelete(entity: Entity) {

@@ -74,10 +74,10 @@ export async function releaseTexture(uid: string) {
     r.users -= 1;
 
     if (!r.users) {
+        delete cache[uid];
         const txt = await r.texture;
         Texture.removeFromCache(uid);
         txt.destroy(true);
-        delete cache[uid];
 
         console.log("Destroyed texture:", uid);
     }

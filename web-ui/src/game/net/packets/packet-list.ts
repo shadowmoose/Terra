@@ -4,6 +4,7 @@ import {ProtoBoard, ProtoTileStack} from "../../data/protobufs/proto-tiles";
 import {EntityDeletePacket, EntityUpdatePacket} from "./entityPackets";
 import {PingPacket, ReadyPacket, SignaturePacket} from "./util-packets";
 import {MediaRequestPacket, MediaStatusPacket} from "./media-packets";
+import {MeasurePacket} from "./measure-packets";
 
 /**
  * The order of this list is important, as the index represents the packet ID for messages and saved boards.
@@ -19,7 +20,8 @@ export const packetList: typeof ProtoWrapper[] = [
     EntityDeletePacket,
     PingPacket,
     MediaStatusPacket,
-    MediaRequestPacket
+    MediaRequestPacket,
+    MeasurePacket
 ];
 
 export const packetMap: Record<string, number> = {};
