@@ -1,5 +1,6 @@
 import sheetSRC from '../../resources/sheet-composite.enc.png';
 import {SpriteInterface} from "../data/interfaces/sprite";
+import {TextureKey} from "../renderer/ui-data/globals";
 const rawData = require('../../resources/sheet-data.json');
 const unscramble = require('./unscramble');
 
@@ -32,15 +33,15 @@ let spriteHeight: number = data.metadata.height;
 let globalFrameIndex: number = 0;
 let fpsTicker: NodeJS.Timeout;
 
-export const waitForSpriteLoad: Promise<any> = new Promise(res => {
+export const waitForSpriteLoad: Promise<HTMLCanvasElement> = new Promise(res => {
 	const img = new Image();
-	img.onerror = err => {
+	img.onerror = (err: any) => {
 		console.error(err);
 		alert('Failed to load sprite sheet! \nTry hard reloading the page (ctrl+F5).');
 	};
 	img.onload = () => {
 		sheet = unscramble(img, 24, process.env.REACT_APP_SPRITE_KEY); // Support the artists - buy from them!
-		res();
+		res(sheet);
 	};
 	img.src = sheetSRC;
 
@@ -74,6 +75,7 @@ function drawImageTo(ctx: CanvasRenderingContext2D, key: Sprite, x: number, y: n
 
 	ctx.drawImage(sheet, img.x, img.y, spriteWidth, spriteHeight, x, y, spriteWidth, spriteHeight);
 }
+
 
 /** Search for images matching the given term. */
 export function searchImages(term: string, animated: boolean = false, nameOnly: boolean = false) {
@@ -117,7 +119,7 @@ export class Sprite implements SpriteInterface {
 	}
 
 	get composite(): string {
-		return `${this.id}:${this.idx}`;
+		return this.mkKey(this.idx);
 	}
 
 	get animated(): boolean {
@@ -133,7 +135,31 @@ export class Sprite implements SpriteInterface {
 		return findSpriteData(this).name;
 	}
 
+	/** Generates a unique ID for this sprite, which can be transmitted as needed. */
+	private mkKey(frame: number) {
+		return `${this.id}:${frame}`;
+	}
+
 	public drawTo(ctx: CanvasRenderingContext2D, x: number, y: number) {
 		drawImageTo(ctx, this, x, y);
+	}
+
+	/**
+	 * Get the data required for the Renderer to create a Texture from this Sprite.
+	 */
+	get textureData(): TextureKey[] {
+		const sprites = findSpriteData(this);
+		const imgs = this.idx < 0 ? sprites.images : [sprites.images[this.idx]];
+
+		return imgs.map((img, idx) => {
+			return {
+				uid: this.mkKey(idx),
+				atlas: waitForSpriteLoad,
+				px: img.x,
+				py: img.y,
+				w: spriteWidth,
+				h: spriteHeight
+			}
+		})
 	}
 }

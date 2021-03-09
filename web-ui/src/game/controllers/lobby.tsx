@@ -21,7 +21,7 @@ export default class Lobby {
             if (result === 'granted') {
                 new Notification(title, {
                     body,
-                    icon: iconURL // TODO: Path to alert icon image.
+                    icon: iconURL
                 });
             }
         });

@@ -162,7 +162,7 @@ const ControlMenu = observer((props: {controller: GameController, forMobile: boo
                     icon={action.icon}
                     tooltipTitle={action.name}
                     tooltipOpen
-                    onClick={() => {handleSelect(action)}}
+                    onClick={(ev) => {ev.stopPropagation(); handleSelect(action)}}
                     title={action.name + ` (Hotkey: ${idx+1})`}
                 />
             ))}

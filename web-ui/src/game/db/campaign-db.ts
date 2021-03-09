@@ -10,7 +10,7 @@ export async function saveCampaign(camp: Campaign) {
 }
 
 export async function createCampaign(name: string): Promise<any> {
-    const obj = {...new Campaign(name), id: null};
+    const obj: any = {...new Campaign(name), id: null};
     delete obj.id;
 
     const res = await db.campaigns.put(stripProxy(obj));

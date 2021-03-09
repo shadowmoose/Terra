@@ -23,7 +23,7 @@ export default class TerrainEraseHandler extends Handler {
 
     async clientHandler(client: Client, packet: TerrainErasePacket): Promise<void> {
         for (const t of packet.coords) {
-            this.terrain.removeAt(t.x, t.y, true);
+            this.terrain.removeAt(t.x, t.y);
         }
     }
 

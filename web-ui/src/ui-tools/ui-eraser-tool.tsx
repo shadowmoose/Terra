@@ -13,7 +13,7 @@ export default class UIEraserTool extends UITool {
 
     constructor(controller: GameController) {
         super(controller);
-        this.middleware = new PenMiddleware(controller.terrain, controller.entities, controller.canvasContainer, false);
+        this.middleware = new PenMiddleware(controller.terrain, false);
     }
 
     getControlUI(forMobile: boolean): JSX.Element|null {
@@ -21,7 +21,7 @@ export default class UIEraserTool extends UITool {
     }
 
     register(): any {
-        this.controller.terrain.registerMiddleware(this.middleware);
+        this.middleware.attach();
         console.log('Mounted eraser tool.')
     }
 

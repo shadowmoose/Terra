@@ -87,7 +87,7 @@ class GoogleApi {
         const oauthToken = user.getAuthResponse().access_token;
         const latest = await this.getLatestBackup();
         const latestID = latest?.id || '';
-        const body = { parents: ['appDataFolder'], name: "terra-db-backup.json", mimeType };
+        const body: any = { parents: ['appDataFolder'], name: "terra-db-backup.json", mimeType };
 
         if(latest) delete body.parents;  // In a PATCH, this field cannot be updated.
 

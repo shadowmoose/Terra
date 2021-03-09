@@ -32,12 +32,12 @@ export default class TerrainAddHandler extends Handler {
             const stack = data.tiles;
 
             if (stack.length) {
-                this.terrain.removeAt(stack[0].x, stack[0].y, false);
+                this.terrain.removeAt(stack[0].x, stack[0].y);
                 for (let i=0; i < stack.length; i++) {
                     const dt = stack[i];
                     const sp = data.sprites[dt.spriteIdx];
                     const t = new Tile(new Sprite(sp.id, sp.idx));
-                    this.terrain.placeAt(dt.x, dt.y, t, i === stack.length-1, false);
+                    this.terrain.placeAt(dt.x, dt.y, t, i === stack.length-1);
                 }
             }
         }

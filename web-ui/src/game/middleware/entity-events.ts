@@ -1,75 +1,78 @@
 import Middleware from "./middleware";
-import {imageHeightPx, imageWidthPx} from "../consts";
-import EntityLayer, {EntityEle} from "../controllers/entities";
+import EntityLayer, {Entity} from "../controllers/entities";
+import {EVENT_STREAM, GridPoint} from "../renderer/ui-data/ui-event-stream";
+import {UiMarker} from "../renderer/ui-components/ui-marker";
+import {toggleViewportInput} from "../renderer";
+import {DEFAULT_PEN_COLOR, setColor} from "../renderer/ui-components/ui-tooltip";
 
-interface Point {
-    x: number;
-    y: number;
-}
 
 export default class EntityMiddleware extends Middleware {
-    private ent: EntityEle|null = null;
-    private readonly container: HTMLElement;
-    private moveListener: Function|null = null;
-    private movePoints: Point[] = [];
-    private moveTrackers: HTMLElement[] = [];
-    private entityLayer: EntityLayer;
+    private ent: Entity|null = null;
+    private movePoints: GridPoint[] = [];
+    private moveTrackers: UiMarker[] = [];
+    private entities: EntityLayer;
 
-    constructor(container: HTMLElement, entLayer: EntityLayer) {
+    constructor(entities: EntityLayer) {
         super();
-        this.container = container;
-        this.entityLayer = entLayer;
-    }
-
-    public setTarget(entEle: EntityEle|null) {
-        this.ent = entEle;
-        this.clearMover();
-        if (this.ent) {
-            this.entityLayer.toggleInput(false);
-            this.ent.bringToFront();
-            this.moveListener = this.listen('pointermove', (ev: PointerEvent) => {
-                const [x, y] = EntityMiddleware.toGrid(ev);
-                this.addPoint(x, y);
-                return true;
-            }, this.container);
-        }
+        this.entities = entities;
     }
 
     register(): void {
-        this.listen('pointerup', (ev: PointerEvent) => {
-            if (this.moveListener) {
-                this.entityLayer.toggleInput(true);
-                return this.clearMover();
+        toggleViewportInput(true);
+        this.listener(EVENT_STREAM.on('mouse-up', () => {
+            this.clearMovers();
+        }));
+
+        this.listener(EVENT_STREAM.on('mouse-down', ev => {
+            const trg = this.entities.getEntityList().find(ent => ent.canMove() && ent.x === ev.tx && ent.y === ev.ty);
+            if (trg) {
+                this.ent = trg;
+                this.entities.selected = trg;
+                toggleViewportInput(false);
             }
-        }, window);
+        }));
+
+        this.listener(EVENT_STREAM.on('mouse-up', () => {
+            if (this.ent) {
+                this.ent = null;
+                toggleViewportInput(true);
+            }
+        }));
+
+        this.listener(EVENT_STREAM.on('hover', ev => {
+            if (this.ent) {
+                this.entities.updateEntity(this.ent.id, {
+                    x: ev.tx,
+                    y: ev.ty
+                });
+                this.addPoint(ev.tx, ev.ty);
+            }
+            if (this.entities.getEntityList().find(ent => ent.canMove() && ent.x === ev.tx && ent.y === ev.ty)) {
+                setColor(0xFF0000);
+            } else {
+                setColor(DEFAULT_PEN_COLOR);
+            }
+        }));
     }
 
-    private clearMover(): boolean {
+    private clearMovers() {
         this.moveTrackers.forEach(mp => mp.remove());
         this.moveTrackers = [];
         this.movePoints = [];
-        if (this.moveListener) {
-            this.moveListener();
-            this.moveListener = null;
-            return true;
-        }
-        return false;
     }
 
     private addPoint(x: number, y: number) {
         const last = this.movePoints[this.movePoints.length-1];
-        if (last && last.x === x && last.y === y) return;
+        if (last && last.tx === x && last.ty === y) return;
 
-        const idx = this.movePoints.findIndex(p => p.x === x && p.y === y);
+        const idx = this.movePoints.findIndex(p => p.tx === x && p.ty === y);
         if (idx >=0) {
             this.movePoints.splice(idx, this.movePoints.length);
+            this.moveTrackers.splice(idx, this.moveTrackers.length).forEach(t => t.remove());
         }
-        this.movePoints.push({x, y});
+        this.movePoints.push({tx: x, ty: y});
+        this.moveTrackers.push(new UiMarker(this.pathLength()+'ft').place(x, y));
         this.checkDiag();
-        this.redrawPath();
-        if (this.ent) {
-            this.entityLayer.updateEntity(this.ent.entity.id,{x, y});
-        }
     }
 
     private checkDiag() {
@@ -81,11 +84,12 @@ export default class EntityMiddleware extends Middleware {
         if (dist < 2) {
             // Corner we can cut!
             this.movePoints.splice(this.movePoints.length-2, 1);
+            this.moveTrackers.splice(this.moveTrackers.length-2, 1).forEach(t => t.remove());
         }
     }
 
-    private static distance(p1: Point, p2: Point) {
-        return Math.sqrt(Math.pow(p1.x-p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+    private static distance(p1: GridPoint, p2: GridPoint) {
+        return Math.sqrt(Math.pow(p1.tx-p2.tx, 2) + Math.pow(p1.ty - p2.ty, 2));
     }
 
     private pathLength(): number {
@@ -100,36 +104,7 @@ export default class EntityMiddleware extends Middleware {
         return Math.floor(val);
     }
 
-    private redrawPath() {
-        this.moveTrackers.forEach(mp => mp.remove());
-        this.moveTrackers = [];
-
-        let id = 0;
-
-        for (const p of this.movePoints) {
-            const ele = document.createElement('div');
-            ele.className = 'entityMoveTracker';
-            Object.assign(ele.style, {
-                width: `${imageWidthPx}px`,
-                height: `${imageHeightPx}px`,
-                left: `${p.x*imageWidthPx}px`,
-                top: `${p.y*imageHeightPx}px`
-            });
-            if (++id === this.movePoints.length) {
-                ele.innerText = `${this.pathLength()*5}`;
-            }
-            this.moveTrackers.push(ele);
-            this.container.append(ele);
-        }
-    }
-
-    private static toGrid(ev: any) {
-        const x = Math.floor(ev.offsetX/imageWidthPx);
-        const y = Math.floor(ev.offsetY/imageHeightPx);
-        return [x, y]
-    }
-
     protected onCleanup(): void {
-        this.clearMover();
+        this.clearMovers();
     }
 }

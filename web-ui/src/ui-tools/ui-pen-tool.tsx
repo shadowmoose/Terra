@@ -17,7 +17,7 @@ export default class UIPenTool extends UITool {
 
     constructor(controller: GameController) {
         super(controller);
-        this.middleware = new PenMiddleware(controller.terrain, controller.entities, controller.canvasContainer);
+        this.middleware = new PenMiddleware(controller.terrain, true);
     }
 
     getControlUI(forMobile: boolean): JSX.Element {
@@ -30,13 +30,13 @@ export default class UIPenTool extends UITool {
     }
 
     register(): any {
-        this.controller.terrain.registerMiddleware(this.middleware);
-        console.log('Mounted pen tool.')
+        console.log('Mounted pen tool.');
+        this.middleware.attach();
     }
 
     unregister(): any {
        this.middleware.eject();
-       console.log('Unmounted pen tool.')
+       console.log('Unmounted pen tool.');
     }
 
     isOption(forMobile: boolean, isHost: boolean): boolean {
@@ -72,7 +72,7 @@ const PenSizeSlider = observer((props: {pen: PenMiddleware}) => {
             marks
             min={1}
             max={8}
-            onChange={ (event: any, newValue: any)=> props.pen.penSize = newValue}
+            onChange={ (event: any, newValue: any)=> props.pen.setPenSize(newValue)}
         />
     </div>
 });

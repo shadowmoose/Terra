@@ -24,11 +24,19 @@ import Campaign from "../game/controllers/campaign";
 import {EntityInterface} from "../game/data/interfaces/entity";
 import CampaignLoader from "../game/data/campaign-loader";
 import stripProxy from "../game/util/deproxy";
+import EntityMiddleware from "../game/middleware/entity-events";
+import {getCenterViewportTile} from "../game/renderer";
 
 
 export default class UIEntityTool extends UITool {
     readonly icon: JSX.Element = <FaceIcon />;
     readonly name: string = 'Entity';
+    private readonly middleware: EntityMiddleware;
+
+    constructor(controller: GameController) {
+        super(controller);
+        this.middleware = new EntityMiddleware(controller.entities);
+    }
 
     getControlUI(forMobile: boolean): JSX.Element {
         return <EntityEditorInterface
@@ -38,11 +46,13 @@ export default class UIEntityTool extends UITool {
     }
 
     register(): any {
-        console.log('Mounted entity tool.')
+        console.log('Mounted entity tool.');
+        this.middleware.attach();
     }
 
     unregister(): any {
-        console.log('Unmounted entity tool.')
+        console.log('Unmounted entity tool.');
+        this.middleware.eject();
     }
 
     isOption(forMobile: boolean, isHost: boolean): boolean {
@@ -152,7 +162,7 @@ const EntityEditorInterface = observer((props: {entities: EntityLayer, controlle
 
 
 const EntityEditInterface = observer((props: {entities: EntityLayer, campaign: Campaign|null}) => {
-    const ent = props.entities.selected?.entity;
+    const ent = props.entities.selected;
     if (!ent) return null;
 
     const [prompt, setSpritePrompt] = React.useState(false);
@@ -163,7 +173,7 @@ const EntityEditInterface = observer((props: {entities: EntityLayer, campaign: C
             if (timeout !== null) {
                 clearTimeout(timeout);
             }
-            const ent = props.entities.selected?.entity;
+            const ent = props.entities.selected;
             if (ent) {
                 timeout = setTimeout(() => {
                     props.entities.updateEntity(ent.id, info);
@@ -287,7 +297,7 @@ const EntityEditInterface = observer((props: {entities: EntityLayer, campaign: C
         <SpritePickerModal
             open={prompt}
             onClose={()=>setSpritePrompt(false)}
-            onSelect={(sp: Sprite) => {ent.sprite = sp}}
+            onSelect={(sp: Sprite) => {props.entities.setEntitySprite(ent, sp)}}
             currentSprite={ent.sprite}
         />
 
@@ -433,14 +443,14 @@ function cloneEntity(entities: EntityLayer, ent: Entity, num: number) {
 function createEntity(entities: EntityLayer, controller: GameController, sprite: Sprite|null, name: string, visible: boolean, ext?: EntityInterface) {
     if (!sprite) return;
 
-    const coords = controller.canvasContainer.screenToBoard(window.innerWidth/2, window.innerHeight/2)
+    const coords = getCenterViewportTile();
     entities.addEntity(sprite, {
         ...(ext||{}),
         sprite,
         name,
         visible,
-        x: coords.x,
-        y: coords.y
+        x: coords.tx,
+        y: coords.ty
     })
 }
 

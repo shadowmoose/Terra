@@ -14,6 +14,6 @@ export default abstract class Handler {
         return this.isHost ? this.hostHandler(client, packet) : this.clientHandler(client, packet);
     }
 
-    abstract async clientHandler(client: Client, packet: ProtoWrapper): Promise<void>;
-    abstract async hostHandler(client: Client, packet: ProtoWrapper): Promise<void>;
+    abstract clientHandler(client: Client, packet: ProtoWrapper): Promise<void>;
+    abstract hostHandler(client: Client, packet: ProtoWrapper): Promise<void>;
 }

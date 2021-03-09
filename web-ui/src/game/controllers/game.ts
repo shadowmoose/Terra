@@ -1,7 +1,5 @@
-import {CanvasContainer} from "./canvas";
 import {Sprite, waitForSpriteLoad} from "../util/sprite-loading";
 import Terrain from "./terrain";
-import {boardTileHeight, boardTileWidth, imageHeightPx, imageWidthPx} from "../consts";
 import {observable} from "mobx";
 import * as connection from '../net/peerconnection'
 import {broadcast, NetworkStatus, getMyID} from "../net/peerconnection";
@@ -25,10 +23,9 @@ import BoardReloadHandler from "../net/handlers/board-reload-handler";
 import MediaSyncHandler from "../net/handlers/media-sync-handler";
 import MediaSync from "../net/prechecks/media-sync";
 import {ProtoSprite} from "../data/protobufs/proto-sprite";
-
+import * as RENDER from '../renderer';
 
 export default class GameController {
-    public canvasContainer: CanvasContainer;
     public terrain: Terrain;
     public entities: EntityLayer;
     @observable public ready: boolean = false;
@@ -38,9 +35,8 @@ export default class GameController {
     @observable public campaign: Campaign|null = null;
 
     constructor() {
-        this.canvasContainer = new CanvasContainer(1, 1);
-        this.terrain = new Terrain(boardTileWidth, boardTileHeight);
-        this.entities = new EntityLayer(boardTileWidth, boardTileHeight);
+        this.terrain = new Terrain();
+        this.entities = new EntityLayer();
         this.lobby = new Lobby();
 
         // Initialize networking stuff:
@@ -66,13 +62,10 @@ export default class GameController {
      */
     public async start() {
         console.debug('Main game controller started.');
-        this.canvasContainer.addLayer(this.terrain);
-        this.canvasContainer.addLayer(this.entities);
 
         await waitForSpriteLoad;
-        console.debug('-- Sprite loader ready! --');
 
-        this.canvasContainer.setCanvasSize(boardTileWidth * imageWidthPx, boardTileHeight * imageHeightPx);
+        RENDER.toggleViewportInput(true);
 
         console.log('Local Room ID Key:', await getMyID());
 

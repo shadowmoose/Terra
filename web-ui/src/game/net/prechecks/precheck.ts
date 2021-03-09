@@ -15,6 +15,6 @@ export abstract class PreCheck {
         return isHost ? this.host(client) : this.client(client);
     }
 
-    abstract async client(client: Client): Promise<void>;
-    abstract async host(client: Client): Promise<void>;
+    abstract client(client: Client): Promise<void>;
+    abstract host(client: Client): Promise<void>;
 }

@@ -1,39 +1,55 @@
 
 export default abstract class Middleware {
-    private ele: HTMLElement|null = null;
     private hooks: any[] = [];
+    public static isShiftDown = false;
 
     public eject() {
         this.hooks.forEach(h => h());
+        setActive(null);
         this.onCleanup();
-        this.ele = null;
     }
 
-    public attach(ele: HTMLElement) {
-        this.ele = ele;
+    public attach() {
+        setActive(this);
         this.register();
     }
 
-    /** Attach an event listener that is automatically cleaned up when this middleware is ejected.
-     * The `cb` callback should return `true` if the event should stop here. */
-    protected listen(event: string, cb: any, target?: HTMLElement|Window): Function {
-        const wrapped = (event: Event) => {
-            const res = cb(event);
-            if (res) {
-                event.stopPropagation();
-                event.preventDefault();
-            }
-            return res;
-        };
-        const trg = target || this.ele;
-        const rem = () => trg?.removeEventListener(event, wrapped);
-        trg?.addEventListener(event, wrapped);
-        this.hooks.push(rem);
-        return rem;
+    /** Automatically cleaned up when this middleware is ejected. */
+    protected listener(cb: any): () => void {
+        this.hooks.push(cb);
+        return cb;
     }
 
-    /** Called once an element is registered and ready to call `listen()`. */
+    /** Called once an element is registered. */
     protected abstract register(): void;
     /** Called after all hooks have been cleaned up. */
     protected abstract onCleanup(): void;
+
+    public onShiftPress(): void {};
+    public onShiftRelease(): void {};
+}
+
+window.addEventListener('keydown', ke => {
+    if (ke.code.startsWith('Shift')) {
+        Middleware.isShiftDown = true;
+        if (active) {
+            active.onShiftPress();
+        }
+    }
+});
+
+window.addEventListener('keyup', ke => {
+    if (ke.code.startsWith('Shift')) {
+        Middleware.isShiftDown = false;
+        if (active) {
+            active.onShiftRelease();
+        }
+    }
+});
+
+
+let active: Middleware|null = null;
+
+export function setActive(middle: Middleware|null) {
+    active = middle;
 }
