@@ -51,7 +51,7 @@ const EraserSizeSlider = observer((props: {pen: PenMiddleware}) => {
             marks
             min={1}
             max={8}
-            onChange={ (event: any, newValue: any)=> props.pen.penSize = newValue}
+            onChange={ (event: any, newValue: any)=> props.pen.setPenSize(newValue)}
         />
     </div>
 });

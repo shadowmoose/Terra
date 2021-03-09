@@ -50,7 +50,7 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
         CampaignLoader.getAvailable().then(campaigns => setList(campaigns));
 
         // Lookup used storage:
-        navigator.storage.estimate().then(function(estimate) {
+        navigator.storage?.estimate().then(function(estimate) {
             const u = estimate.usage;
             const q = estimate.quota
             if (u !== undefined && q !== undefined) setStorage({ q, u});

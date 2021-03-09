@@ -30,7 +30,7 @@ export default abstract class Middleware {
 }
 
 window.addEventListener('keydown', ke => {
-    if (ke.code.startsWith('Shift')) {
+    if (ke.code?.startsWith('Shift')) {
         Middleware.isShiftDown = true;
         if (active) {
             active.onShiftPress();
@@ -39,7 +39,7 @@ window.addEventListener('keydown', ke => {
 });
 
 window.addEventListener('keyup', ke => {
-    if (ke.code.startsWith('Shift')) {
+    if (ke.code?.startsWith('Shift')) {
         Middleware.isShiftDown = false;
         if (active) {
             active.onShiftRelease();
