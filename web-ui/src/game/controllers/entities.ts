@@ -55,6 +55,8 @@ export default class EntityLayer {
         this.remove(ent.id, sendUpdate);
 
         ENTITIES.createEntity(ent.id, ent.name, sprite.textureData).then(e => {
+            e.setColor(ent.color);
+            e.setHidden(!ent.visible);
             e.place(ent.x, ent.y);
         }).catch(console.error);
 
