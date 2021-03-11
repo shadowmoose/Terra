@@ -32,7 +32,7 @@ const config: PlayerConfig = observable.object({
 });
 
 function saveConf() {
-    metadata.store(Meta.PLAYER_CONFIG, config).catch(console.error);
+    metadata.store(Meta.YT_PLAYER_CONFIG, config).catch(console.error);
 }
 
 /**
@@ -66,7 +66,7 @@ export const YoutubePlayerInterface = observer(() => {
     const [visible, setVisible] = React.useState(false);
 
     React.useMemo(() => {
-        metadata.get(Meta.PLAYER_CONFIG).then(async (res: PlayerConfig|null) => {
+        metadata.get(Meta.YT_PLAYER_CONFIG).then(async (res: PlayerConfig|null) => {
             if (res) {
                 Object.assign(config, res);
             }

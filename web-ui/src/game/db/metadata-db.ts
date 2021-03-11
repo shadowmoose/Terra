@@ -7,7 +7,7 @@ export enum Meta {
     CERT_SEED = 'secret_cert_seed',
     USERNAME = 'username',
     CAMPAIGN_CURRENT = 'campaign_current',
-    PLAYER_CONFIG = 'player_config',
+    YT_PLAYER_CONFIG = 'player_config',
 }
 
 async function get(id: Meta): Promise<any> {

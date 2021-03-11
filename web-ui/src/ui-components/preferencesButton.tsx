@@ -1,8 +1,9 @@
 import {observer} from "mobx-react-lite";
 import {
+    Button,
     Dialog,
     DialogContent,
-    DialogTitle, Divider,
+    DialogTitle,
     Fab,
     FormControlLabel, Slider,
     Switch,
@@ -18,6 +19,8 @@ import EntityLayer from "../game/controllers/entities";
 import hotkeys from "hotkeys-js";
 import MeasureHandler from "../game/net/handlers/measure-handler";
 import * as RENDER from '../game/renderer';
+import {Meta, metadata} from "../game/db/metadata-db";
+import {InputDialog} from "./prompts";
 
 
 export const PreferencesButton = observer( (props: {controller: GameController}) => {
@@ -68,7 +71,7 @@ export const PreferencesButton = observer( (props: {controller: GameController})
                 <GridSwitch />
                 <NameSwitch entities={props.controller.entities} />
                 <MeasureSwitch />
-                <Divider />
+                <NameChange />
                 <ZoomSlider />
             </DialogContent>
         </Dialog>
@@ -151,7 +154,7 @@ const ZoomSlider = () => {
     }
 
     return <div>
-        <Typography id="discrete-slider" gutterBottom style={{paddingTop: '10px'}}>
+        <Typography id="discrete-slider" gutterBottom style={{textAlign: "center"}}>
             Zoom Scale: {scale}x
         </Typography>
         <Slider
@@ -164,6 +167,40 @@ const ZoomSlider = () => {
             min={0.5}
             max={4}
             onChange={ (event: any, newValue: any)=> updateScale(newValue)}
+        />
+    </div>
+}
+
+
+const NameChange = () => {
+    const [showPrompt, setShowPrompt] = React.useState(false);
+
+    function onChange(name: string) {
+        metadata.store(Meta.USERNAME, name).then(() => {
+            window.location.reload();
+        });
+    }
+
+    return <div>
+        <Button
+            onClick={() => {
+                setShowPrompt(true);
+            }}
+            color="primary"
+            variant={"outlined"}
+            style={{marginTop: '10px', marginBottom: '10px', width: '100%'}}
+
+        >
+            Change Username
+        </Button>
+        <InputDialog
+            body={'Enter a new Name'}
+            onCancel={()=>setShowPrompt(false)}
+            onSubmit={(data: string) => onChange(data)}
+            open={showPrompt}
+            title={'Change Username'}
+            tooltip={'(requires reload after changing)'}
+            acceptText={'Change'}
         />
     </div>
 }
