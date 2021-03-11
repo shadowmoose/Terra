@@ -76,10 +76,6 @@ PIXI.Ticker.shared.add(() => {
     }
 });
 
-viewport.on('zoomed-end', () => {
-    // Assist with clean rendering by snapping "close enough" zoom at 1x
-    if (Math.abs(1 - viewport.scaled) < 0.1) viewport.scaled = 1;
-});
 
 window.addEventListener('resize', () => {
     const t = getCenterViewportTile();

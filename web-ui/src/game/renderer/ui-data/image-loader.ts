@@ -30,8 +30,13 @@ export async function makeTexture(key: TextureKey): Promise<Texture> {
 
     const prom = new Promise(async (res, rej) => {
         if ("atlas" in key) {
-            const sub = createImageBitmap(await key.atlas, key.px, key.py, key.w, key.h);
-            return res(Texture.from(await sub));
+            const can = document.createElement('canvas');
+            const ctx = can.getContext('2d')!;
+            can.width = key.w;
+            can.height = key.h;
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(await key.atlas, key.px, key.py, key.w, key.h, 0, 0, key.w, key.h);
+            return res(Texture.from(can));
         }
         const resource = await key.source;
         if ((typeof resource).toLowerCase() !== 'string') {
