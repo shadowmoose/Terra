@@ -26,7 +26,7 @@ serviceWorker.register({
             persist: true,
             action: <Button
                 variant={"outlined"}
-                onClick={()=>{notifications.close(tID); needReload = true; data.waiting?.postMessage('SKIP_WAITING')}}
+                onClick={()=>{notifications.close(tID); needReload = true; data.waiting?.postMessage({ type: "SKIP_WAITING" })}}
             >
                 Reload
             </Button>
@@ -35,6 +35,7 @@ serviceWorker.register({
 });
 
 navigator.serviceWorker.addEventListener('controllerchange', () => {
+    console.warn('cache worker replaced.')
     if (!needReload) return;
     needReload = false;
     window.location.reload();  // Reload when we detect our service worker has changed.

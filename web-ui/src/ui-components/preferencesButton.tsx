@@ -44,7 +44,7 @@ export const PreferencesButton = observer( (props: {controller: GameController})
 
     return <div style={{ width: '56px' }}>
         <Tooltip
-            title='Settings'
+            title='Preferences'
             style={{
                 pointerEvents: 'auto',
             }}
