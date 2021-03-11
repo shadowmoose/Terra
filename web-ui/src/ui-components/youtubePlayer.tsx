@@ -180,6 +180,7 @@ export const YoutubePlayer = (props: {loop: boolean, shuffle: boolean, volume: n
             onPause={onPause}
             onError={onError}
             onStateChange={onStateChange}
+            className={'yt-player-class'}
         />
     </div>;
 };

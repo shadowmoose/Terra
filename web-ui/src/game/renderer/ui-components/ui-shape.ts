@@ -33,6 +33,11 @@ export class UiShape {
         return this;
     }
 
+    setVisible(visible: boolean) {
+        this.gr.visible = visible;
+        return this;
+    }
+
     /**
      * Set the size of this object.
      * If ignored, height matches width. Height currently only applies to rectangles.

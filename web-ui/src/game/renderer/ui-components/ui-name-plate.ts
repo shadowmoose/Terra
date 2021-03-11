@@ -47,6 +47,12 @@ export class UiNamePlate extends Text{
         this.text = name;
     }
 
+    public setVisible(visible: boolean) {
+        if (!this.text) visible = false;
+        this.visible = visible;
+        this.bkg.visible = visible;
+    }
+
     /**
      * Place this plate near the given coords, sliding up to make space for preexisting plates.
      * @param x

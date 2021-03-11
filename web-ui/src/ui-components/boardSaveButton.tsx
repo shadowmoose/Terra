@@ -3,7 +3,7 @@ import {CircularProgress, Fab, Tooltip} from "@material-ui/core";
 import SaveIcon from '@material-ui/icons/Save';
 import React from "react";
 import GameController from "../game/controllers/game";
-import {netMode, NetworkMode} from "../game/net/peerconnection";
+import {isHost} from "../game/net/peerconnection";
 import hotkeys from "hotkeys-js";
 import google from '../game/util/google-api';
 import notifications from "./notifications";
@@ -20,7 +20,7 @@ export const BoardSaveButton = observer( (props: {controller: GameController}) =
     const saveBoard = React.useMemo(() => {
         if (!shouldSave) return ()=>{};
         return async () => {
-            if (netMode.get() !== NetworkMode.HOST) return;
+            if (!isHost()) return;
             setSaving(true);
             try {
                 await props.controller.saveBoard();
@@ -52,7 +52,7 @@ export const BoardSaveButton = observer( (props: {controller: GameController}) =
             } else {
                 notifications.warning('Not (optionally) syncing with Google Drive.', {
                     action: <Button onClick={()=>google.promptSignIn()} variant={'outlined'}>Connect</Button>,
-                    autoHideDuration: 10000
+                    autoHideDuration: 6000
                 });
             }
         })
@@ -71,7 +71,7 @@ export const BoardSaveButton = observer( (props: {controller: GameController}) =
         }
     }, [props.controller, saveBoard])
 
-    if (netMode.get() !== NetworkMode.HOST) return null;
+    if (!isHost()) return null;
 
     let title = shouldSave ? "Save Board (ctrl+s)" : "No changes to save.";
 

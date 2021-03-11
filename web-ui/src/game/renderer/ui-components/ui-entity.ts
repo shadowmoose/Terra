@@ -64,6 +64,10 @@ export class UiEntity extends AnimatedSprite {
         return this;
     }
 
+    setShowName(show: boolean) {
+        this.plate.setVisible(show);
+    }
+
     async setTextures(textures: TextureKey[]) {
         const newIDs = textures.map(t => t.uid);
         this.stop();
