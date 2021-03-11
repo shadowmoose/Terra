@@ -1,5 +1,4 @@
-
-module.exports = function override(config, env) {
+module.exports = function override(config, _env) {
 	//do stuff with the webpack config...
 	config.module.rules.unshift({
 		test: /\.worker\.(js|ts)$/i,
@@ -10,6 +9,7 @@ module.exports = function override(config, env) {
 			}
 		}]
 	});
-	console.debug('Injected comlink-loader into module build rules.');
+	console.debug('+ Injected comlink-loader into module build rules.');
+
 	return config;
 }

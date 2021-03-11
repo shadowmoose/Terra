@@ -14,9 +14,7 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
+let needReload = false;
 serviceWorker.register({
     onSuccess: (data) => {
         console.log('cache worker register: success.', data);
@@ -28,7 +26,7 @@ serviceWorker.register({
             persist: true,
             action: <Button
                 variant={"outlined"}
-                onClick={()=>{notifications.close(tID); window.location.reload()}}
+                onClick={()=>{notifications.close(tID); needReload = true; data.waiting?.postMessage('SKIP_WAITING')}}
             >
                 Reload
             </Button>
@@ -36,3 +34,8 @@ serviceWorker.register({
     }
 });
 
+navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!needReload) return;
+    needReload = false;
+    window.location.reload();  // Reload when we detect our service worker has changed.
+});
