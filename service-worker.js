@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "https://terra.rofl.wtf/precache-manifest.6a58122eb974a60545906935790071a1.js"
+  "https://terra.rofl.wtf/precache-manifest.16b3831ec80b626306e3026912c5e2c6.js"
 );
 
 self.addEventListener('message', (event) => {
