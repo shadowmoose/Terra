@@ -22,7 +22,7 @@ serviceWorker.register({
         console.log('cache worker register: success.', data);
     },
     onUpdate: (data) => {
-        console.log('cache worker update.', data);
+        console.warn('cache worker update.', data);
         const tID = notifications.info('An update is available. Please reload all open TERA windows.', {
             preventDuplicate: true,
             persist: true,
