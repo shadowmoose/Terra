@@ -17,6 +17,7 @@ import {BoardSelector} from "./ui-components/boardSelector";
 import {BoardSaveButton} from "./ui-components/boardSaveButton";
 import {InputDialog} from "./ui-components/prompts";
 import {YoutubePlayerInterface} from "./ui-components/youtubePlayer";
+import {PreferencesButton} from "./ui-components/preferencesButton";
 
 
 const controller = new GameController();
@@ -95,10 +96,17 @@ const App = observer(() => {
                     top: '10px',
                     left: '10px'
                 }}>
-                    <CampaignSelector controller={controller}/>
+                    <div style={{
+                        display: 'flex',
+                        pointerEvents: 'none',
+                        flexDirection: 'column',
+                    }}>
+                        <PreferencesButton controller={controller} />
+                        <CampaignSelector controller={controller}/>
+                        <YoutubePlayerInterface />
+                    </div>
                     <BoardSelector controller={controller}/>
                     <BoardSaveButton controller={controller} />
-                    <YoutubePlayerInterface />
                 </div>
 
                 {content}

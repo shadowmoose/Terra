@@ -4,7 +4,7 @@ import {Meta, metadata} from "../game/db/metadata-db";
 import CampaignLoader from "../game/data/campaign-loader";
 import {observer} from "mobx-react-lite";
 import Campaign from "../game/controllers/campaign";
-import SettingsIcon from '@material-ui/icons/Settings';
+import PublicIcon from '@material-ui/icons/Public';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import RestoreIcon from '@material-ui/icons/Restore';
@@ -81,10 +81,10 @@ export const CampaignSelector = observer((props: {controller: GameController}) =
             }}
         >
             <Fab
-                color="primary"
+                color="default"
                 onClick={()=>{setWantOpen(true)}}
             >
-                <SettingsIcon />
+                <PublicIcon style={{color: '#4d8a20'}}/>
             </Fab>
         </Tooltip>
 

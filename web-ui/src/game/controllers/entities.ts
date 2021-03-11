@@ -35,6 +35,7 @@ export class Entity implements EntityInterface{
 
 export default class EntityLayer {
     private readonly entities: Record<string, Entity> = {};
+    @observable public showNames = true;
     @observable public selected: Entity|null = null;
     @observable public isDirty: boolean = false;
 
@@ -58,6 +59,7 @@ export default class EntityLayer {
             e.setColor(ent.color);
             e.setHidden(!ent.visible);
             e.place(ent.x, ent.y);
+            e.setShowName(this.showNames);
         }).catch(console.error);
 
         this.entities[ent.id] = ent;
@@ -116,6 +118,15 @@ export default class EntityLayer {
         entity.sprite = sprite;
         ENTITIES.getEntity(entity.id).then(e => {
             e?.setTextures(sprite.textureData);
+        })
+    }
+
+    setDisplayNamePlates(show: boolean) {
+        this.showNames = show;
+        this.getEntityList().forEach(ent => {
+            ENTITIES.getEntity(ent.id).then(ent => {
+                ent?.setShowName(show);
+            })
         })
     }
 

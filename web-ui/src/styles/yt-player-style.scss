@@ -1,6 +1,7 @@
 
 .ytPlayerIcon {
-  padding-left: 10px;
+  width: 56px;
+  margin-top: 15px;
 }
 
 .ytPlayerIconInner {
@@ -15,7 +16,7 @@
   display: none;
   position: fixed;
   left: 50%;
-  top: 75px;
+  bottom: 75px;
   transform: translateX(-50%);
 }
 
@@ -44,4 +45,23 @@
 
 #yt-player {
   display: block;
+}
+
+
+.yt-player-class {
+  width: 350px;
+  height: 197px;
+}
+
+/* For width 400px and larger: */
+@media only screen and (min-width: 400px) {
+  .ytPlayerWrapper {
+    top: 75px;
+    bottom: auto;
+  }
+
+  .yt-player-class {
+    width: 720px;
+    height: 405px;
+  }
 }

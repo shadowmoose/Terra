@@ -153,6 +153,7 @@ export async function openHost() {
     sb.on('kill', (err) => {
         console.error(err);
         netStatus.set(NetworkStatus.DISCONNECTED);
+        notifications.error(`Unable to establish network connection.`, {preventDuplicate: true});
     });
     sb.host();
 }

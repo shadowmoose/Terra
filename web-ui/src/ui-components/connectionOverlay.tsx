@@ -1,5 +1,5 @@
 import * as connection from "../game/net/peerconnection";
-import {NetworkMode, NetworkStatus} from "../game/net/peerconnection";
+import {isHost, NetworkMode, NetworkStatus} from "../game/net/peerconnection";
 import LoginHelper from "./loginHelper";
 import Backdrop from "@material-ui/core/Backdrop";
 import {Typography} from "@material-ui/core";
@@ -21,7 +21,7 @@ export default function ConnectionOverlay(props: {controller: GameController}) {
     } else {
         switch (connection.netStatus.get()) {
             case NetworkStatus.DISCONNECTED:
-                message = `Error connecting to service. Cannot reconnect.`;
+                if (!isHost()) message = `Error connecting to service. Cannot reconnect.`; // client only, host can stay on editing.
                 break;
             case NetworkStatus.RECONNECTING:
                 message = 'Error with connection to Host. Attempting reconnection...';

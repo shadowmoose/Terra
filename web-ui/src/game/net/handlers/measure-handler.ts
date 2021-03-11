@@ -5,6 +5,7 @@ import GameController from "../../controllers/game";
 import {MeasurePacket} from "../packets/measure-packets";
 import {SHAPE_TYPES, UiShape} from "../../renderer/ui-components/ui-shape";
 import {UiMarker} from "../../renderer/ui-components/ui-marker";
+import {observable} from "mobx";
 
 interface MeasureElements {
     shape: UiShape;
@@ -14,7 +15,8 @@ interface MeasureElements {
 export default class MeasureHandler extends Handler {
     readonly packets: typeof ProtoWrapper[] = [MeasurePacket];
     private readonly controller: GameController;
-    public readonly userShapes: Record<string, MeasureElements> = {};
+    public static readonly userShapes: Record<string, MeasureElements> = {};
+    @observable public static displayMeasures = true;
 
     constructor(controller: GameController) {
         super();
@@ -32,26 +34,27 @@ export default class MeasureHandler extends Handler {
     }
 
     private handleShape(id: string, pkt: MeasurePacket|null) {
-        const exist = this.userShapes[id];
+        const exist = MeasureHandler.userShapes[id];
         if (exist) {
             exist.marker.remove();
             exist.shape.remove();
-            delete this.userShapes[id];
+            delete MeasureHandler.userShapes[id];
         }
         if (pkt && pkt.visible) {
-            this.userShapes[id] = {
+            MeasureHandler.userShapes[id] = {
                 shape: new UiShape(pkt.type as SHAPE_TYPES)
                     .color(pkt.color)
                     .setRotation(pkt.angle)
                     .size(pkt.tw, pkt.th)
                     .setPosPx(pkt.px, pkt.py)
                     .thickness(pkt.thickness)
-                    .setFillColor(pkt.fill, pkt.alpha),
-                marker: new UiMarker((pkt.tw*5)+'ft').place(pkt.tx, pkt.ty)
+                    .setFillColor(pkt.fill, pkt.alpha)
+                    .setVisible(MeasureHandler.displayMeasures),
+                marker: new UiMarker((pkt.tw*5)+'ft').place(pkt.tx, pkt.ty).setVisible(MeasureHandler.displayMeasures)
             }
             if (isHost()) {
-                this.userShapes[id].shape.onClick(() => {
-                    MeasureHandler.sendMeasure(this.userShapes[id].shape, false);
+                MeasureHandler.userShapes[id].shape.onClick(() => {
+                    MeasureHandler.sendMeasure(MeasureHandler.userShapes[id].shape, false);
                     this.handleShape(id, null);
                 })
             }
@@ -78,5 +81,17 @@ export default class MeasureHandler extends Handler {
 
         console.log(visible, pkt);
         return broadcast(pkt, false);
+    }
+
+    /**
+     * Toggle measure visibility.
+     * @param show
+     */
+    public static showMeasures(show: boolean) {
+        this.displayMeasures = show;
+        for (const m of Object.values(MeasureHandler.userShapes)) {
+            m.shape.setVisible(show);
+            m.marker.setVisible(show);
+        }
     }
 }

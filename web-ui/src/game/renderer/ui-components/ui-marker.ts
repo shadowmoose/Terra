@@ -62,6 +62,12 @@ export class UiMarker {
         return this;
     }
 
+    setVisible(visible: boolean) {
+        this.txt.visible = visible;
+        this.gr.visible = visible;
+        return this;
+    }
+
     remove() {
         OVERLAY_LAYER.removeChild(this.gr, this.txt);
         this.gr.destroy({
