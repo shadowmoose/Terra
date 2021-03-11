@@ -2,9 +2,9 @@ import {observer} from "mobx-react-lite";
 import {
     Dialog,
     DialogContent,
-    DialogTitle,
+    DialogTitle, Divider,
     Fab,
-    FormControlLabel,
+    FormControlLabel, Slider,
     Switch,
     Tooltip,
     Typography
@@ -17,6 +17,7 @@ import * as LS from '../game/data/local-storage';
 import EntityLayer from "../game/controllers/entities";
 import hotkeys from "hotkeys-js";
 import MeasureHandler from "../game/net/handlers/measure-handler";
+import * as RENDER from '../game/renderer';
 
 
 export const PreferencesButton = observer( (props: {controller: GameController}) => {
@@ -67,6 +68,8 @@ export const PreferencesButton = observer( (props: {controller: GameController})
                 <GridSwitch />
                 <NameSwitch entities={props.controller.entities} />
                 <MeasureSwitch />
+                <Divider />
+                <ZoomSlider />
             </DialogContent>
         </Dialog>
     </div>
@@ -135,5 +138,32 @@ const MeasureSwitch = () => {
                 inputProps={{ 'aria-label': 'show measures' }}
             />
         } label={'User Measurements'} style={{color: useMeasure ? 'black' : 'gray'}}/>
+    </div>
+}
+
+
+const ZoomSlider = () => {
+    const [scale, setScale] = React.useState(RENDER.getZoom());
+
+    function updateScale(val: number) {
+        RENDER.setZoom(val);
+        setScale(val);
+    }
+
+    return <div>
+        <Typography id="discrete-slider" gutterBottom style={{paddingTop: '10px'}}>
+            Zoom Scale: {scale}x
+        </Typography>
+        <Slider
+            value={scale}
+            getAriaValueText={() => `${scale}`}
+            aria-labelledby="discrete-slider"
+            valueLabelDisplay="auto"
+            step={.5}
+            marks
+            min={0.5}
+            max={4}
+            onChange={ (event: any, newValue: any)=> updateScale(newValue)}
+        />
     </div>
 }

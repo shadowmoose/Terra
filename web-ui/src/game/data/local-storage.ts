@@ -14,5 +14,5 @@ export function set(key: string, val: any) {
 export enum STORAGE {
     SHOW_GRID = 'showGrid',
     SHOW_NAMES = 'showNames',
-    SHOW_MEASURES = 'showShapes'
+    SHOW_MEASURES = 'showShapes',
 }

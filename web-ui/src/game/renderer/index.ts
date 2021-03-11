@@ -134,6 +134,14 @@ export function getCenterViewportTile(): GridPoint {
     }
 }
 
+export function setZoom(scale: number) {
+    viewport.setZoom(scale, true);
+}
+
+export function getZoom() {
+    return viewport.scaled;
+}
+
 /**
  * Adjusts all sizes and elements to be sure they fit within the window properly.
  * Automatically called when the window resizes and when the DOM initially loads.
