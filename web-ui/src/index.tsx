@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'fontsource-roboto';
+import notifications from "./ui-components/notifications";
+import {Button} from "@material-ui/core";
 
 ReactDOM.render(
   //<React.StrictMode>
@@ -20,7 +22,17 @@ serviceWorker.register({
         console.log('cache worker register: success.', data);
     },
     onUpdate: (data) => {
-        console.log('cache worker update.', data)
+        console.log('cache worker update.', data);
+        const tID = notifications.info('An update is available. Please reload all open TERA windows.', {
+            preventDuplicate: true,
+            persist: true,
+            action: <Button
+                variant={"outlined"}
+                onClick={()=>{notifications.close(tID); window.location.reload()}}
+            >
+                Reload
+            </Button>
+        })
     }
 });
 
