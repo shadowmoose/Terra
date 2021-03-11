@@ -1,0 +1,31 @@
+{
+  "files": {
+    "main.css": "https://terra.rofl.wtf/unstable/static/css/main.91535038.chunk.css",
+    "main.js": "https://terra.rofl.wtf/unstable/static/js/main.b68afeb6.chunk.js",
+    "main.js.map": "https://terra.rofl.wtf/unstable/static/js/main.b68afeb6.chunk.js.map",
+    "runtime-main.js": "https://terra.rofl.wtf/unstable/static/js/runtime-main.933993ed.js",
+    "runtime-main.js.map": "https://terra.rofl.wtf/unstable/static/js/runtime-main.933993ed.js.map",
+    "static/css/2.a364790a.chunk.css": "https://terra.rofl.wtf/unstable/static/css/2.a364790a.chunk.css",
+    "static/js/2.90de632c.chunk.js": "https://terra.rofl.wtf/unstable/static/js/2.90de632c.chunk.js",
+    "static/js/2.90de632c.chunk.js.map": "https://terra.rofl.wtf/unstable/static/js/2.90de632c.chunk.js.map",
+    "17dabf5032029cde981d.worker.js": "https://terra.rofl.wtf/unstable/17dabf5032029cde981d.worker.js",
+    "17dabf5032029cde981d.worker.js.map": "https://terra.rofl.wtf/unstable/17dabf5032029cde981d.worker.js.map",
+    "dfec99d253b86822a4f7.worker.js": "https://terra.rofl.wtf/unstable/dfec99d253b86822a4f7.worker.js",
+    "dfec99d253b86822a4f7.worker.js.map": "https://terra.rofl.wtf/unstable/dfec99d253b86822a4f7.worker.js.map",
+    "index.html": "https://terra.rofl.wtf/unstable/index.html",
+    "precache-manifest.a681a1813fe32630e722c72accd569f8.js": "https://terra.rofl.wtf/unstable/precache-manifest.a681a1813fe32630e722c72accd569f8.js",
+    "service-worker.js": "https://terra.rofl.wtf/unstable/service-worker.js",
+    "static/css/2.a364790a.chunk.css.map": "https://terra.rofl.wtf/unstable/static/css/2.a364790a.chunk.css.map",
+    "static/css/main.91535038.chunk.css.map": "https://terra.rofl.wtf/unstable/static/css/main.91535038.chunk.css.map",
+    "static/js/2.90de632c.chunk.js.LICENSE.txt": "https://terra.rofl.wtf/unstable/static/js/2.90de632c.chunk.js.LICENSE.txt",
+    "static/media/index.css": "https://terra.rofl.wtf/unstable/static/media/roboto-latin-900-normal.bb1e4dc6.woff",
+    "static/media/sheet-composite.enc.png": "https://terra.rofl.wtf/unstable/static/media/sheet-composite.enc.c54111ee.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.933993ed.js",
+    "static/css/2.a364790a.chunk.css",
+    "static/js/2.90de632c.chunk.js",
+    "static/css/main.91535038.chunk.css",
+    "static/js/main.b68afeb6.chunk.js"
+  ]
+}
