@@ -17,7 +17,7 @@ import {BoardSelector} from "./ui-components/boardSelector";
 import {BoardSaveButton} from "./ui-components/boardSaveButton";
 import {InputDialog} from "./ui-components/prompts";
 import {YoutubePlayerInterface} from "./ui-components/youtubePlayer";
-import {PreferencesButton} from "./ui-components/preferencesButton";
+import {PreferencesButton} from "./ui-components/preferencesMenu";
 
 
 const controller = new GameController();

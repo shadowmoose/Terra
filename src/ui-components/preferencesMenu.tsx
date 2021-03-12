@@ -146,7 +146,7 @@ const MeasureSwitch = () => {
 
 
 const ZoomSlider = () => {
-    const [scale, setScale] = React.useState(RENDER.getZoom());
+    const [scale, setScale] = React.useState(1);
 
     function updateScale(val: number) {
         RENDER.setZoom(val);
