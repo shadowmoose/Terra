@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://terra.rofl.wtf/a2c88eea25f722e5640b.worker.js"
   },
   {
-    "revision": "978d8e7aa879cf4bb138b94a039a9ba5",
+    "revision": "c52c1fef2ae47d40fd98364b21ea17e0",
     "url": "https://terra.rofl.wtf/index.html"
   },
   {
@@ -16,7 +16,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://terra.rofl.wtf/static/css/2.d3e916ef.chunk.css"
   },
   {
-    "revision": "b8bef62efe804dbed884",
+    "revision": "8ae8c4ced86ea24d6d7b",
     "url": "https://terra.rofl.wtf/static/css/main.c19a2ab2.chunk.css"
   },
   {
@@ -28,8 +28,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://terra.rofl.wtf/static/js/2.9c976b1c.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "b8bef62efe804dbed884",
-    "url": "https://terra.rofl.wtf/static/js/main.56e6114b.chunk.js"
+    "revision": "8ae8c4ced86ea24d6d7b",
+    "url": "https://terra.rofl.wtf/static/js/main.08b89bab.chunk.js"
   },
   {
     "revision": "70161a97c0110dcdecac",
