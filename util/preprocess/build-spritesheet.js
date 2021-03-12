@@ -145,4 +145,4 @@ const run = async(imageDir, outDir, uid, width=48, height=48) => {
 
 
 
-run('../../images/', `../../web-ui/src/resources`, 'composite').then(() => console.log('Finished.'));
+run('../../images/', `../../src/resources`, 'composite').then(() => console.log('Finished.'));

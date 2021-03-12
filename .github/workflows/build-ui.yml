@@ -28,12 +28,11 @@ jobs:
     - name: Install Requirements (cached)
       uses: bahmutov/npm-install@v1
       with:
-        working-directory: web-ui
+        working-directory: ./
         useLockFile: true
         
     - name: Build
       run: |
-        cd web-ui
         npm run build
       env:
         CI: ""
@@ -45,7 +44,7 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./web-ui/build
+        publish_dir: ./build
         publish_branch: gh-pages
         user_name: "build-bot"
         user_email: "github_bot@github.com"
