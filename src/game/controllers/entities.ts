@@ -115,6 +115,7 @@ export default class EntityLayer {
     }
 
     public setEntitySprite(entity: Entity, sprite: Sprite) {
+        this.isDirty = true;
         entity.sprite = sprite;
         ENTITIES.getEntity(entity.id).then(e => {
             e?.setTextures(sprite.textureData);
