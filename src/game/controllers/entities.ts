@@ -118,7 +118,8 @@ export default class EntityLayer {
         entity.sprite = sprite;
         ENTITIES.getEntity(entity.id).then(e => {
             e?.setTextures(sprite.textureData);
-        })
+        });
+        EntityUpdateHandler.sendUpdate(entity);
     }
 
     setDisplayNamePlates(show: boolean) {

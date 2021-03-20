@@ -34,7 +34,7 @@ serviceWorker.register({
     }
 });
 
-navigator.serviceWorker.addEventListener('controllerchange', () => {
+navigator.serviceWorker?.addEventListener('controllerchange', () => {
     console.warn('cache worker replaced.')
     if (!needReload) return;
     needReload = false;
