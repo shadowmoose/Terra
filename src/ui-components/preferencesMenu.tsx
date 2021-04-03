@@ -63,6 +63,19 @@ export const PreferencesButton = observer( (props: {controller: GameController})
         <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
             <DialogTitle style={{textAlign: "center"}}>User Settings</DialogTitle>
 
+            <Button
+                onClick={() => {
+                    // @ts-ignore
+                    window.location = window.location.toString().replace(window.location.hash, '');
+                }}
+                color="secondary"
+                variant={"outlined"}
+                style={{marginTop: '10px', marginBottom: '10px', width: '100%'}}
+            >
+                Disconnect
+            </Button>
+
+
             <DialogContent style={{textAlign: "center"}}>
                 <Typography variant="h6" component="h6" gutterBottom>Display Options</Typography>
             </DialogContent>
@@ -189,7 +202,6 @@ const NameChange = () => {
             color="primary"
             variant={"outlined"}
             style={{marginTop: '10px', marginBottom: '10px', width: '100%'}}
-
         >
             Change Username
         </Button>
@@ -199,7 +211,7 @@ const NameChange = () => {
             onSubmit={(data: string) => onChange(data)}
             open={showPrompt}
             title={'Change Username'}
-            tooltip={'(requires reload after changing)'}
+            tooltip={'(requires reload)'}
             acceptText={'Change'}
         />
     </div>

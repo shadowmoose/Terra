@@ -9,6 +9,7 @@ const entities: Record<string, Promise<UiEntity>> = {};
 export class UiEntity extends AnimatedSprite {
     public readonly id: string;
     public name: string;
+    public autoFlip = true;
     private textureIDs: string[] = [];
     private plate: UiNamePlate;
     private added = false;
@@ -29,6 +30,16 @@ export class UiEntity extends AnimatedSprite {
             this.play();
             ENTITY_LAYER.addChild(this);
         }
+        if (this.autoFlip && tileX*GRID_TILE_PX !== this.position.x){
+            if (tileX*GRID_TILE_PX > this.position.x) {
+                this.scale.x = -1;
+                this.anchor.x = 1;
+            } else {
+                this.scale.x = 1;
+                this.anchor.x = 0;
+            }
+        }
+
         this.position.set(tileX * GRID_TILE_PX, tileY * GRID_TILE_PX);
         this.plate.place(this.position.x + GRID_TILE_PX/2, this.position.y);
         return this;
