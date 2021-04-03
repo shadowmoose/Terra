@@ -16,11 +16,11 @@ export class UiEntity extends AnimatedSprite {
     private destroyed = false;
 
     constructor(id: string, name: string) {
-            super([Texture.WHITE], true);
-            this.animationSpeed = 5/60;
-            this.id = id;
-            this.name = name;
-            this.plate = new UiNamePlate(name);
+        super([Texture.WHITE], true);
+        this.animationSpeed = 5/60;
+        this.id = id;
+        this.name = name;
+        this.plate = new UiNamePlate(name);
     }
 
     place (tileX: number, tileY: number) {
@@ -89,8 +89,15 @@ export class UiEntity extends AnimatedSprite {
             this.textureIDs = textures.map(t => t.uid);
             this.textures = loaded;
             this.gotoAndPlay(1);
-        })
+        });
+        if (newIDs.some(tid=>tid.includes('mechacritler.animated.wizard'))) {
+            this.setAnimationSpeed(3); // Really bad place for this code, but it's for a little easter egg.
+        }
         return this;
+    }
+
+    setAnimationSpeed(multiplier: number) {
+        this.animationSpeed = (5*multiplier)/60;
     }
 }
 
