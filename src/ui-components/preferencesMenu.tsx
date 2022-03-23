@@ -87,6 +87,12 @@ export const PreferencesButton = observer( (props: {controller: GameController})
                 <NameChange />
                 <ZoomSlider />
             </DialogContent>
+
+            <DialogContent style={{textAlign: "center"}}>
+                <p style={{color: 'gray'}}>
+                    Current Build: {process.env.REACT_APP_CURRENT_SHA || 'Unknown'}
+                </p>
+            </DialogContent>
         </Dialog>
     </div>
 });
