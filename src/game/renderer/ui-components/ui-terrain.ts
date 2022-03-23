@@ -22,7 +22,9 @@ export function getAt(tx: number, ty: number) {
  */
 async function sortAt(tx: number, ty: number) {
     const arr = await Promise.all(Array.from(getAt(tx, ty)));
-    arr.sort(t => t.tz).forEach((t, idx) => t.zIndex = idx);
+    arr.sort((t1, t2) => t1.tz - t2.tz).forEach((t, idx) => {
+        t.zIndex = idx;
+    });
 }
 
 function scheduleSort(tx: number, ty: number) {
@@ -38,7 +40,7 @@ class UiTile extends Sprite{
     public readonly tx: number;
     public readonly ty: number;
     public readonly tz: number;
-    private readonly txtID: string;
+    public readonly txtID: string;
 
     constructor(tx: number, ty: number, z: number, texture: Texture, texID: string) {
         super(texture);
