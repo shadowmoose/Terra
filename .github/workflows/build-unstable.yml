@@ -26,8 +26,16 @@ jobs:
         with:
           node-version: '12'
 
+      - name: Patch broken repo links
+        run: |
+          git config --global url."https://".insteadOf git://
+
+      - name: Get commit ID
+        id: commit
+        uses: pr-mpt/actions-commit-hash@v1
+
       - name: Install Requirements (cached)
-        uses: bahmutov/npm-install@v1
+        uses: bahmutov/npm-install@v1.6.0
         with:
           working-directory: ./
           useLockFile: true
@@ -43,6 +51,7 @@ jobs:
           PUBLIC_URL: "https://terra.rofl.wtf/unstable"
           REACT_APP_GOOGLE_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
           REACT_APP_SPRITE_KEY: ${{ secrets.REACT_APP_SPRITE_KEY }}
+          REACT_APP_CURRENT_SHA: ${{ steps.commit.outputs.short }}
 
       - name: Deploy to Unstable Directory
         uses: peaceiris/actions-gh-pages@v3

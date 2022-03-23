@@ -29,6 +29,10 @@ jobs:
       run: |
         git config --global url."https://".insteadOf git://
 
+    - id: commit
+      name: Get commit ID
+      uses: pr-mpt/actions-commit-hash@v1
+
     - name: Install Requirements (cached)
       uses: bahmutov/npm-install@v1.6.0
       with:
@@ -43,6 +47,7 @@ jobs:
         PUBLIC_URL: "https://terra.rofl.wtf"
         REACT_APP_GOOGLE_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
         REACT_APP_SPRITE_KEY: ${{ secrets.REACT_APP_SPRITE_KEY }}
+        REACT_APP_CURRENT_SHA: ${{ steps.commit.outputs.short }}
 
     - name: Deploy to Web
       uses: peaceiris/actions-gh-pages@v3
