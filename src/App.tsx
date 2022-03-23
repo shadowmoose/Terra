@@ -20,6 +20,8 @@ import {YoutubePlayerInterface} from "./ui-components/youtubePlayer";
 import {PreferencesButton} from "./ui-components/preferencesMenu";
 
 
+console.log(`This build was generated from the Git commit: https://github.com/shadowmoose/Terra/commit/${process.env.REACT_APP_CURRENT_SHA||""}`);
+
 const controller = new GameController();
 
 if (process.env.NODE_ENV !== 'development' && !window.location.href.includes('unstable')) {
