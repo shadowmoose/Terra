@@ -25,6 +25,10 @@ jobs:
       with:
         node-version: '12'
 
+    - name: Patch broken repo links
+      run: |
+        git config --global url."https://".insteadOf git://
+
     - name: Install Requirements (cached)
       uses: bahmutov/npm-install@v1.6.0
       with:
