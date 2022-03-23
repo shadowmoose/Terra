@@ -21,7 +21,7 @@ serviceWorker.register({
     },
     onUpdate: (data) => {
         console.warn('cache worker update.', data);
-        const tID = notifications.info('An update is available. Please reload TERA.', {
+        const tID = notifications.info('An update is available. Please reload Terra.', {
             preventDuplicate: true,
             persist: true,
             action: <Button
