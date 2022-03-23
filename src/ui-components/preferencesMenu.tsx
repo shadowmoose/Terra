@@ -61,7 +61,14 @@ export const PreferencesButton = observer( (props: {controller: GameController})
         </Tooltip>
 
         <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
-            <DialogTitle style={{textAlign: "center"}}>User Settings</DialogTitle>
+            <Tooltip
+                title={"Built from commit ID: " + (process.env.REACT_APP_CURRENT_SHA || 'Unknown')}
+                style={{
+                    pointerEvents: 'auto',
+                }}
+            >
+                <DialogTitle style={{textAlign: "center"}}>User Settings</DialogTitle>
+            </Tooltip>
 
             <Button
                 onClick={() => {
@@ -86,12 +93,6 @@ export const PreferencesButton = observer( (props: {controller: GameController})
                 <MeasureSwitch />
                 <NameChange />
                 <ZoomSlider />
-            </DialogContent>
-
-            <DialogContent style={{textAlign: "center"}}>
-                <p style={{color: 'gray'}}>
-                    Current Build: {process.env.REACT_APP_CURRENT_SHA || 'Unknown'}
-                </p>
             </DialogContent>
         </Dialog>
     </div>
