@@ -216,7 +216,7 @@ export function SpritePickerModal(props: {open: boolean, onClose: Function, onSe
 
             <FormGroup style={{marginTop: 20}} row>
                 <Tooltip
-                    title="Try to use a reliable image host, like Imgur. This MUST be a direct link on an https site."
+                    title="Try to use a reliable image host, like Imgur. This MUST be a direct link on an https site. Ideally, 48x48 resolution."
                 >
                     <Autocomplete
                         selectOnFocus={true}
