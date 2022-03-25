@@ -11783,10 +11783,10 @@ svgo@^1.0.0, svgo@^1.2.2:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-switchboard.js@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/switchboard.js/-/switchboard.js-1.1.0.tgz#f222c536e357ab2fc569f5b3ade42fc722952fcf"
-  integrity sha512-MCdy6bYpj51HzL/2tkQuEEUFiBnddu/qg3alrxDm5hSGtC73474nA99GbJDCwmH03fYDJ2jd0fyPCfaGmdsbSA==
+switchboard.js@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/switchboard.js/-/switchboard.js-1.2.0.tgz#833cdb2ffed60f141a2fb7dab727616ddc106a54"
+  integrity sha512-1RiXvGf9MYl0lNtUO+OUwzIKySEcYv6nOyRHJDBVFLpiSX0sE0BL4FTWPb/pR8kY7Tsg5FCs+qPQ/ZEcT/9WZA==
   dependencies:
     bs58 "^4.0.1"
     isomorphic-ws "^4.0.1"

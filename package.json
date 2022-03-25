@@ -35,7 +35,7 @@
     "react-youtube": "^7.11.3",
     "serialazy": "^2.0.2",
     "shuffle-seed": "1.1.6",
-    "switchboard.js": "1.1.0",
+    "switchboard.js": "1.2.0",
     "uuid": "^8.2.0"
   },
   "eslintConfig": {
