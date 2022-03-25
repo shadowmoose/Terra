@@ -61,6 +61,7 @@ export default class PenMiddleware extends Middleware {
         }));
 
         const wheelCB = (ev: WheelEvent) => {
+            if (!ev.target || !(ev.target as HTMLElement).classList.contains("MAIN-GAME-CANVAS")) return true;
             if (!ev.shiftKey) {
                 const out = Math.sign(ev.deltaY) * -1;
                 this.setPenSize(Math.max(1, Math.min(8, this.penSize += out)));
