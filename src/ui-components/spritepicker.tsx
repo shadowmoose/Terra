@@ -1,5 +1,5 @@
-import React from 'react';
-import {FormControlLabel, Modal, Switch, TextField} from "@material-ui/core";
+import React, {useState} from 'react';
+import {Button, FormControlLabel, Modal, Switch, TextField, Tooltip} from "@material-ui/core";
 import FormGroup from '@material-ui/core/FormGroup';
 import {searchImages, Sprite} from "../game/util/sprite-loading";
 import {imageHeightPx, imageWidthPx} from '../game/consts';
@@ -8,6 +8,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import {FixedSizeGrid} from "react-window";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import {Autocomplete} from "@material-ui/lab";
+import {toggleViewportInput} from "../game/renderer";
 
 
 export default function SpritePicker (
@@ -120,9 +121,11 @@ export function SpriteImage(props: {sprite: Sprite|null, onSelect?: Function, se
     const canv: any = React.useRef(null);
     // @ts-ignore
     const sel = props.onSelect ? () => props.onSelect(props.sprite) : ()=>{};
+    const isGif = props.sprite?.id.startsWith("gif:");
 
     React.useEffect(() => {
         const redraw = () => {
+            if (isGif) return;
             if (canv.current){
                 // @ts-ignore
                 const ctx: CanvasRenderingContext2D = canv.current.getContext('2d');
@@ -130,7 +133,7 @@ export function SpriteImage(props: {sprite: Sprite|null, onSelect?: Function, se
                 props.sprite?.drawTo(ctx, 0, 0);
             }
         };
-        const cancel: any = props.sprite?.animated ? setInterval(redraw, 200) : null;
+        const cancel: any = !isGif && props.sprite?.animated ? setInterval(redraw, 200) : null;
         redraw();
 
         return () => {
@@ -138,7 +141,20 @@ export function SpriteImage(props: {sprite: Sprite|null, onSelect?: Function, se
                 clearInterval(cancel);
             }
         }
-    }, [props.sprite])
+    }, [props.sprite, isGif])
+
+    if (isGif) {
+        return <img
+            src={props.sprite?.id.replace("gif:", "")}
+            width={imageWidthPx}
+            height={imageHeightPx}
+            style={{width: '48px', height: '48px', background: 'gray'}}
+            className={`spriteImage ${props.selected ? 'selected': ''}`}
+            title={props.sprite?.name || 'No Sprite'}
+            alt={props.sprite?.name || 'No Sprite'}
+            onClick={sel}
+        />
+    }
 
     return <canvas
         ref={canv}
@@ -171,6 +187,15 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function SpritePickerModal(props: {open: boolean, onClose: Function, onSelect: Function, currentSprite: Sprite|null}) {
     const classes = useStyles();
+    const [gifUrl, setGifUrl] = useState("");
+
+    React.useEffect(()=>{
+        toggleViewportInput(!props.open);
+        return ()=>{
+            toggleViewportInput(true);
+        }
+    }, [props.open]);
+
     return <Modal
         open={props.open}
         aria-labelledby="sprite-picker-modal"
@@ -188,6 +213,36 @@ export function SpritePickerModal(props: {open: boolean, onClose: Function, onSe
                 }}
                 canAnimate={true}
             />
+
+            <FormGroup style={{marginTop: 20}} row>
+                <Tooltip
+                    title="Try to use a reliable image host, like Imgur. This MUST be a direct link."
+                >
+                    <Autocomplete
+                        selectOnFocus={true}
+                        options={[]}
+                        style={{ width: 300 }}
+                        freeSolo={true}
+                        value={gifUrl}
+                        inputValue={gifUrl}
+                        onInputChange={(event, newInputValue) => {
+                            setGifUrl(newInputValue);
+                        }}
+                        renderInput={(params) => <TextField {...params} label="Use a GIF URL" variant="outlined" />}
+                    />
+                </Tooltip>
+
+                <Button
+                    variant={"outlined"}
+                    onClick={()=>{
+                        props.onClose();
+                        props.onSelect(new Sprite("gif:"+gifUrl, -1));
+                        console.log("Selected new Gif:", gifUrl);
+                    }}
+                >
+                    Select
+                </Button>
+            </FormGroup>
         </div>
     </Modal>
 }

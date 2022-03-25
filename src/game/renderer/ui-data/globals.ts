@@ -59,6 +59,7 @@ export interface TextureKeyAtlas {
     py: number;
     w: number;
     h: number;
+    delay?: number;
 }
 export type TextureKey = TextureKeySource | TextureKeyAtlas;
 

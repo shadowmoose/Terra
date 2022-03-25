@@ -46,7 +46,7 @@ export default class UIPenTool extends UITool {
 
 
 const PenControlInterface = observer((props: {terrain: Terrain, setSearch: Function, term: string, pen: PenMiddleware}) => {
-    return <div className={'cont'}>
+    return <div className={'cont'} >
         <PenSizeSlider pen={props.pen}/>
         <SpritePicker
             onSelect={(sp: Sprite) => props.terrain.selectedSprite = sp}

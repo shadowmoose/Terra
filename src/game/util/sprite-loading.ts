@@ -57,6 +57,13 @@ export const waitForSpriteLoad: Promise<HTMLCanvasElement> = new Promise(res => 
  * @param key
  */
 function findSpriteData(key: Sprite): DataSprite {
+	if (key.id.startsWith("gif:")) {
+		return {
+			animated: -1,
+			images: [],
+			name: "loaded gif"
+		}
+	}
 	const ret = data.sprites[key.id];
 	if (!ret) throw Error(`Unable to locate sprite for key: ${key.composite}`);
 	return ret;
@@ -150,6 +157,13 @@ export class Sprite implements SpriteInterface {
 	get textureData(): TextureKey[] {
 		const sprites = findSpriteData(this);
 		const imgs = this.idx < 0 ? sprites.images : [sprites.images[this.idx]];
+
+		if (this.id.startsWith("gif:")) {
+			return [{
+				uid: this.id,
+				source: waitForSpriteLoad
+			}]
+		}
 
 		return imgs.map((img, idx) => {
 			return {

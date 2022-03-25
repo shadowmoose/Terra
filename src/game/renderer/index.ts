@@ -24,6 +24,7 @@ export * as MARKER from './ui-components/ui-marker';
 */
 
 const app = new PIXI.Application({ resizeTo: document.body, backgroundColor: 0x484848 });
+app.view.classList.add("MAIN-GAME-CANVAS");
 document.body.appendChild(app.view);
 
 app.view.addEventListener('contextmenu', (ev: any) => {

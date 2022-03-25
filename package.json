@@ -16,6 +16,7 @@
     "dexie-export-import": "^1.0.0-rc.2",
     "downloadjs": "^1.4.7",
     "fontsource-roboto": "^2.1.4",
+    "gifuct-js": "^2.1.2",
     "hotkeys-js": "^3.8.1",
     "mobx": "^5.15.4",
     "mobx-react-lite": "^2.0.7",

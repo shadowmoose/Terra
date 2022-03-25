@@ -81,7 +81,7 @@ const useStyles = makeStyles(() =>
 
 const EntityEditorInterface = observer((props: {entities: EntityLayer, controller: GameController}) => {
     const [promptSprite, setSpritePrompt] = React.useState(false);
-    const [selectedSprite, setSprite] = React.useState(null);
+    const [selectedSprite, setSprite] = React.useState<Sprite|null>(null);
     const [entName, setName] = React.useState('');
     const [visible, setVisible] = React.useState(true);
     const [loadExisting, setLoadExisting] = React.useState(false);
@@ -130,7 +130,7 @@ const EntityEditorInterface = observer((props: {entities: EntityLayer, controlle
             <Button
                 variant="contained"
                 color="primary"
-                onClick={()=>{createEntity(props.entities, props.controller, selectedSprite, entName, visible); resetValues();}}
+                onClick={()=>{createEntity(props.entities, selectedSprite, entName, visible); resetValues();}}
                 disabled={!selectedSprite}
             >
                 Create
@@ -377,7 +377,7 @@ const CampaignCharacterSelector = observer((props: {
                     const sel = getSelected(selected);
                     if (sel) {
                         const sp = new Sprite(sel.sprite.id, sel.sprite.idx);
-                        createEntity(props.entities, props.controller, sp, sel.name, true, sel);
+                        createEntity(props.entities, sp, sel.name, true, sel);
                         props.onClose();
                     }
                 }} color="primary">
@@ -440,7 +440,7 @@ function cloneEntity(entities: EntityLayer, ent: Entity, num: number) {
 }
 
 
-function createEntity(entities: EntityLayer, controller: GameController, sprite: Sprite|null, name: string, visible: boolean, ext?: EntityInterface) {
+function createEntity(entities: EntityLayer, sprite: Sprite|null, name: string, visible: boolean, ext?: EntityInterface) {
     if (!sprite) return;
 
     const coords = getCenterViewportTile();

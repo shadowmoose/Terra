@@ -1,6 +1,6 @@
 import {AnimatedSprite} from "pixi.js";
 import {UiNamePlate} from "./ui-name-plate";
-import {makeTexture, releaseTexture} from "../ui-data/image-loader";
+import {loadFramesFromGif, makeTexture, releaseGif, releaseTexture} from "../ui-data/image-loader";
 import {ENTITY_LAYER, GRID_TILE_PX, TextureKey} from "../ui-data/globals";
 import {Texture} from 'pixi.js';
 
@@ -14,6 +14,7 @@ export class UiEntity extends AnimatedSprite {
     private plate: UiNamePlate;
     private added = false;
     private destroyed = false;
+    private currentGif: string|null = null;
 
     constructor(id: string, name: string) {
         super([Texture.WHITE], true);
@@ -21,6 +22,7 @@ export class UiEntity extends AnimatedSprite {
         this.id = id;
         this.name = name;
         this.plate = new UiNamePlate(name);
+        this.setAnimationSpeed(60);
     }
 
     place (tileX: number, tileY: number) {
@@ -56,6 +58,9 @@ export class UiEntity extends AnimatedSprite {
             this.destroy();
             this.plate.remove();
             this.textureIDs.forEach(t => releaseTexture(t));
+            if (this.currentGif) {
+                releaseGif(this.currentGif).then();
+            }
         }
     }
 
@@ -82,22 +87,33 @@ export class UiEntity extends AnimatedSprite {
     async setTextures(textures: TextureKey[]) {
         const newIDs = textures.map(t => t.uid);
         this.stop();
-        Promise.all(textures.map(t => makeTexture(t))).then(loaded => {
+
+        const newGifUri = textures[0]?.uid.startsWith("gif:") ? textures[0].uid : null;
+        if (this.currentGif && newGifUri !== this.currentGif) {
+            await releaseGif(this.currentGif);
+        }
+        this.currentGif = newGifUri;
+        if (this.currentGif) {
+            const loadedGif = await loadFramesFromGif(this.currentGif);
+            textures = loadedGif.frames;
+        }
+
+        await Promise.all(textures.map(t => makeTexture(t))).then(loaded => {
             this.textureIDs.forEach(tid => {
                 if (!newIDs.find(id => id === tid)) releaseTexture(tid);
             });
             this.textureIDs = textures.map(t => t.uid);
             this.textures = loaded;
-            this.gotoAndPlay(1);
+            // @ts-ignore
+            this._durations = textures.map(t=>t.delay || 160);
         });
-        if (newIDs.some(tid=>tid.includes('mechacritler.animated.wizard'))) {
-            this.setAnimationSpeed(3); // Really bad place for this code, but it's for a little easter egg.
-        }
+
+        this.gotoAndPlay(1);
         return this;
     }
 
     setAnimationSpeed(multiplier: number) {
-        this.animationSpeed = (5*multiplier)/60;
+        this.animationSpeed = multiplier/60;
     }
 }
 
