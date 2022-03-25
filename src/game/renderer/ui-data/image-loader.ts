@@ -166,7 +166,7 @@ export async function loadFramesFromGif(gifURI: string): Promise<LoadedGif> {
                 ctx.globalAlpha = 1;
 
                 gif.forEach((frame, idx) => {
-                    if (iDat == null || frame.dims.width !== iDat.width || frame.dims.height != iDat.height) {
+                    if (iDat == null || frame.dims.width !== iDat.width || frame.dims.height !== iDat.height) {
                         can.width = frame.dims.width;
                         can.height = frame.dims.height;
                         iDat = ctx.createImageData(frame.dims.width, frame.dims.height);

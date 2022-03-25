@@ -216,7 +216,7 @@ export function SpritePickerModal(props: {open: boolean, onClose: Function, onSe
 
             <FormGroup style={{marginTop: 20}} row>
                 <Tooltip
-                    title="Try to use a reliable image host, like Imgur. This MUST be a direct link."
+                    title="Try to use a reliable image host, like Imgur. This MUST be a direct link on an https site."
                 >
                     <Autocomplete
                         selectOnFocus={true}
@@ -226,7 +226,7 @@ export function SpritePickerModal(props: {open: boolean, onClose: Function, onSe
                         value={gifUrl}
                         inputValue={gifUrl}
                         onInputChange={(event, newInputValue) => {
-                            setGifUrl(newInputValue);
+                            setGifUrl(newInputValue.trim());
                         }}
                         renderInput={(params) => <TextField {...params} label="Use a GIF URL" variant="outlined" />}
                     />
@@ -239,8 +239,9 @@ export function SpritePickerModal(props: {open: boolean, onClose: Function, onSe
                         props.onSelect(new Sprite("gif:"+gifUrl, -1));
                         console.log("Selected new Gif:", gifUrl);
                     }}
+                    disabled={!gifUrl.trim().startsWith("https:")}
                 >
-                    Select
+                    Use GIF
                 </Button>
             </FormGroup>
         </div>
