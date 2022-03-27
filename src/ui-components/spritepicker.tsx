@@ -48,7 +48,7 @@ export default function SpritePicker (
         return () => {
             clearTimeout(timeout);
         }
-    }, [searchTerm, animated]);
+    }, [searchTerm, animated, props.forEntity]);
 
 
     return <div style={{
