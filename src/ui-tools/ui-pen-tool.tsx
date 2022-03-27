@@ -54,6 +54,7 @@ const PenControlInterface = observer((props: {terrain: Terrain, setSearch: Funct
             defaultTerm={props.term}
             selected={props.terrain.selectedSprite}
             canAnimate={false}
+            forEntity={false}
         />
     </div>
 });

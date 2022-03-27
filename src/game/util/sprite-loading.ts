@@ -85,8 +85,10 @@ function drawImageTo(ctx: CanvasRenderingContext2D, key: Sprite, x: number, y: n
 
 
 /** Search for images matching the given term. */
-export function searchImages(term: string, animated: boolean = false, nameOnly: boolean = false) {
+export function searchImages(term: string, animated: boolean = false, nameOnly: boolean = false, favorites?: SpriteInterface[]) {
 	const res: Sprite[] = [];
+	const seen: Record<string, boolean> = {};
+
 	const search = Object.entries(data.sprites).filter( (obj) => {
 		if (animated && !obj[1].animated) {
 			return false;
@@ -97,15 +99,31 @@ export function searchImages(term: string, animated: boolean = false, nameOnly: 
 
 		return obj[0].includes(term.toLowerCase())
 	}).map(o => ({ path: o[0], sprite: o[1]}));
+
+	favorites?.forEach(f => {
+		let comparatorId = f.id;
+		if (comparatorId.startsWith("gif:")) {
+			comparatorId = "loaded gif";
+		}
+		if (comparatorId.includes(term.toLowerCase())) {
+			res.push(new Sprite(f.id, f.idx));
+			seen[f.id+":"+f.idx] = true;
+		}
+	});
+
 	if (!animated) {
 		search.forEach(o => {
 			for(let i=0; i < o.sprite.images.length; i++) {
-				res.push(new Sprite(o.path, i));
+				if (!seen[o.path+ ":" + i]) {
+					res.push(new Sprite(o.path, i));
+				}
 			}
 		})
 	} else {
 		search.forEach(o => {
-			res.push(new Sprite(o.path, -1));
+			if (!seen[o.path+":-1"]) {
+				res.push(new Sprite(o.path, -1));
+			}
 		})
 	}
 

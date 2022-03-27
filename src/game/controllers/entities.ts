@@ -44,7 +44,10 @@ export default class EntityLayer {
         if (existing) {
             ENTITIES.releaseEntity(id).catch(console.error);
             delete this.entities[id];
-            if (sendUpdate) EntityUpdateHandler.sendDelete(existing);
+            if (sendUpdate) {
+                this.isDirty = true;
+                EntityUpdateHandler.sendDelete(existing);
+            }
         }
         if (existing === this.selected) this.selected = null;
         return !!existing;

@@ -23,6 +23,7 @@ export * as SHAPES from './ui-components/ui-shape';
 export * as MARKER from './ui-components/ui-marker';
 */
 
+let zoomEnabled = true;
 const app = new PIXI.Application({ resizeTo: document.body, backgroundColor: 0x484848 });
 app.view.classList.add("MAIN-GAME-CANVAS");
 document.body.appendChild(app.view);
@@ -97,6 +98,13 @@ app.view.addEventListener('mousedown', e => {
     fireMouseEvent(type, e);
 });
 
+app.view.addEventListener("mouseenter", () => {
+    viewport.pause = !zoomEnabled;
+});
+app.view.addEventListener("mouseleave", () => {
+    viewport.pause = true;
+});
+
 window.addEventListener('mouseup', e => {
     const type = e.button === 1 ? 'mouse-middle-up' : e.button === 0 ? 'mouse-up' : 'mouse-right-up';
     fireMouseEvent(type, e);
@@ -122,6 +130,7 @@ function fireMouseEvent(type: any, e: any) {
  * @param enabled
  */
 export function toggleViewportInput(enabled: boolean) {
+    zoomEnabled = enabled;
     viewport.pause = !enabled;
 }
 

@@ -8,6 +8,7 @@ export enum Meta {
     USERNAME = 'username',
     CAMPAIGN_CURRENT = 'campaign_current',
     YT_PLAYER_CONFIG = 'player_config',
+    FAVORITE_SPRITES = "favoriteSprites",
 }
 
 async function get(id: Meta): Promise<any> {

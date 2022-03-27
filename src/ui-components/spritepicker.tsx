@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, FormControlLabel, Modal, Switch, TextField, Tooltip} from "@material-ui/core";
 import FormGroup from '@material-ui/core/FormGroup';
 import {searchImages, Sprite} from "../game/util/sprite-loading";
@@ -7,8 +7,11 @@ import '../styles/sprite-picker.scss'
 import AutoSizer from 'react-virtualized-auto-sizer';
 import {FixedSizeGrid} from "react-window";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import {Autocomplete} from "@material-ui/lab";
-import {toggleViewportInput} from "../game/renderer";
+import {Meta, metadata} from "../game/db/metadata-db";
+import {SpriteInterface} from "../game/data/interfaces/sprite";
 
 
 export default function SpritePicker (
@@ -17,8 +20,9 @@ export default function SpritePicker (
         onSearch?: Function,
         defaultTerm?: string,
         selected?: Sprite|null,
-        animated?: boolean
-        canAnimate?: boolean
+        animated?: boolean,
+        canAnimate?: boolean,
+        forEntity: boolean
     }) {
     const [searchTerm, setSearch] = React.useState(props.defaultTerm || '');
     const [animated, setAnimated] = React.useState(!!props.animated);
@@ -36,8 +40,10 @@ export default function SpritePicker (
 
     React.useEffect(() => {
         const timeout = setTimeout(() => {
-            const results = searchImages(searchTerm, animated, false);
-            setSprites(results);
+            getFavorites(props.forEntity).then(fe => {
+                const results = searchImages(searchTerm, animated, false, fe);
+                setSprites(results);
+            })
         }, 200)
         return () => {
             clearTimeout(timeout);
@@ -77,14 +83,16 @@ export default function SpritePicker (
                 />
             </FormGroup>
         </form>
-        <div style={{height: '280px'}}>
-            <SpriteGrid sprites={sprites} onSelect={props.onSelect} selected={props.selected} />
+        <div
+            style={{height: '280px'}}
+        >
+            <SpriteGrid sprites={sprites} onSelect={props.onSelect} selected={props.selected} forEntity={props.forEntity} />
         </div>
     </div>;
 }
 
 
-export function SpriteGrid(props: {sprites: Sprite[], onSelect: Function, selected?: Sprite|null}) {
+export function SpriteGrid(props: {sprites: Sprite[], onSelect: Function, selected?: Sprite|null, forEntity: boolean}) {
     return <AutoSizer className={'autosizer'}>
         {function size(size: { height: number, width: number }){
             const wrapperSize = 52;
@@ -105,7 +113,7 @@ export function SpriteGrid(props: {sprites: Sprite[], onSelect: Function, select
                     const spr = props.sprites[data.columnIndex + data.rowIndex * perRow];
                     if (spr) {
                         return <div style={data.style}>
-                            <SpriteImage sprite={spr} onSelect={props.onSelect} selected={props.selected?.composite === spr.composite}/>
+                            <SpriteImage sprite={spr} onSelect={props.onSelect} selected={props.selected?.composite === spr.composite} forEntity={props.forEntity}/>
                         </div>
                     } else {
                         return <div/>
@@ -117,7 +125,7 @@ export function SpriteGrid(props: {sprites: Sprite[], onSelect: Function, select
 }
 
 
-export function SpriteImage(props: {sprite: Sprite|null, onSelect?: Function, selected?: boolean}) {
+export function SpriteImage(props: {sprite: Sprite|null, onSelect?: Function, selected?: boolean, forEntity: boolean}) {
     const canv: any = React.useRef(null);
     // @ts-ignore
     const sel = props.onSelect ? () => props.onSelect(props.sprite) : ()=>{};
@@ -144,27 +152,122 @@ export function SpriteImage(props: {sprite: Sprite|null, onSelect?: Function, se
     }, [props.sprite, isGif])
 
     if (isGif) {
-        return <img
-            src={props.sprite?.id.replace("gif:", "")}
+        return <div style={{position: 'relative'}}>
+            <FavoriteSpriteButton sprite={props.sprite} forEntity={props.forEntity} />
+            <img
+                src={props.sprite?.id.replace("gif:", "")}
+                width={imageWidthPx}
+                height={imageHeightPx}
+                style={{width: '48px', height: '48px', background: 'gray'}}
+                className={`spriteImage ${props.selected ? 'selected': ''}`}
+                title={props.sprite?.name || 'No Sprite'}
+                alt={props.sprite?.name || 'No Sprite'}
+                onClick={sel}
+            />
+        </div>
+    }
+
+    return <div style={{position: 'relative'}}>
+        <FavoriteSpriteButton sprite={props.sprite} forEntity={props.forEntity} />
+        <canvas
+            ref={canv}
             width={imageWidthPx}
             height={imageHeightPx}
             style={{width: '48px', height: '48px', background: 'gray'}}
             className={`spriteImage ${props.selected ? 'selected': ''}`}
             title={props.sprite?.name || 'No Sprite'}
-            alt={props.sprite?.name || 'No Sprite'}
             onClick={sel}
         />
+    </div>
+}
+
+export function FavoriteSpriteButton(props: {sprite: Sprite|null, forEntity: boolean}) {
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [isHovered,setIsHovered] = useState(false);
+    const offset = 2;
+
+    function toggleFavorite() {
+        if (props.sprite) {
+            setFavorite(props.sprite, !isFavorite, props.forEntity).then(() => {
+                setIsFavorite(!isFavorite);
+            });
+        }
     }
 
-    return <canvas
-        ref={canv}
-        width={imageWidthPx}
-        height={imageHeightPx}
-        style={{width: '48px', height: '48px', background: 'gray'}}
-        className={`spriteImage ${props.selected ? 'selected': ''}`}
-        title={props.sprite?.name || 'No Sprite'}
-        onClick={sel}
-    />
+    useEffect(()=>{
+        if (props.sprite) {
+            getIsFavorite(props.sprite, props.forEntity).then(fav => {
+                setIsFavorite(fav);
+            })
+        }
+    }, [props.sprite, props.forEntity]);
+
+    if (!props.sprite) return null;
+
+    return <>
+        <FavoriteIcon
+            style={{
+                position: 'absolute',
+                top: offset,
+                left: offset,
+                color: isFavorite ? "red" : "gray",
+            }}
+            fontSize={"small"}
+        />
+        <Tooltip title={"Toggle favorite"}>
+            <FavoriteBorderIcon
+                style={{
+                    position: 'absolute',
+                    top: offset,
+                    left: offset,
+                    color: isHovered ? "cyan" : "white",
+                    cursor: 'pointer'
+                }}
+                fontSize={"small"}
+                onMouseEnter={()=>setIsHovered(true)}
+                onMouseLeave={()=>setIsHovered(false)}
+                onClick={toggleFavorite}
+            />
+        </Tooltip>
+    </>
+}
+
+
+type cacheTypeKey = 'entities' | 'terrain';
+let cachedFavorites: Record<cacheTypeKey, SpriteInterface[]> = {} as any;
+
+async function getFavorites(isForEntity: boolean) {
+    const tag = isForEntity ? 'entities' : 'terrain';
+    if (!cachedFavorites[tag] || !cachedFavorites[tag].length) {
+        const res: typeof cachedFavorites = await metadata.get(Meta.FAVORITE_SPRITES);
+        cachedFavorites = res || {};
+        cachedFavorites[tag] = cachedFavorites[tag] || [];
+    }
+    return cachedFavorites[tag];
+}
+
+async function getIsFavorite(sprite: Sprite, isForEntity: boolean) {
+    const list = await getFavorites(isForEntity);
+    return !! list.find(o=>o.id === sprite.id && o.idx === sprite.idx);
+}
+
+async function setFavorite(sprite: Sprite, favorite: boolean, isForEntity: boolean) {
+    const list = await getFavorites(isForEntity);
+
+    if (favorite) {
+         if (!list.find(s=>s.id === sprite.id && s.idx === sprite.idx)) {
+             list.push(sprite);
+         }
+    } else {
+        const idx = list.findIndex(v=>v.id === sprite.id && v.idx === sprite.idx);
+        if (idx>=0) {
+            list.splice(idx, 1);
+        }
+    }
+
+    await metadata.store(Meta.FAVORITE_SPRITES, cachedFavorites);
+
+    return true;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -189,13 +292,6 @@ export function SpritePickerModal(props: {open: boolean, onClose: Function, onSe
     const classes = useStyles();
     const [gifUrl, setGifUrl] = useState("");
 
-    React.useEffect(()=>{
-        toggleViewportInput(!props.open);
-        return ()=>{
-            toggleViewportInput(true);
-        }
-    }, [props.open]);
-
     return <Modal
         open={props.open}
         aria-labelledby="sprite-picker-modal"
@@ -212,6 +308,7 @@ export function SpritePickerModal(props: {open: boolean, onClose: Function, onSe
                     props.onSelect(sp);
                 }}
                 canAnimate={true}
+                forEntity={true}
             />
 
             <FormGroup style={{marginTop: 20}} row>

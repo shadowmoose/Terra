@@ -109,6 +109,7 @@ const EntityEditorInterface = observer((props: {entities: EntityLayer, controlle
                 <SpriteImage
                     sprite={selectedSprite}
                     onSelect={() => {setSpritePrompt(true)}}
+                    forEntity={true}
                 />
             </div>
         </FormGroup>
@@ -216,6 +217,7 @@ const EntityEditInterface = observer((props: {entities: EntityLayer, campaign: C
                     <SpriteImage
                         sprite={ent.sprite}
                         onSelect={() => {setSpritePrompt(true)}}
+                        forEntity={true}
                     />
                 </div>
 
@@ -352,7 +354,7 @@ const CampaignCharacterSelector = observer((props: {
                         if (!sel) return '';
 
                         return <MenuItem style={{pointerEvents: 'none'}}>
-                            <SpriteImage sprite={new Sprite(sel.sprite.id, sel.sprite.idx)} />
+                            <SpriteImage sprite={new Sprite(sel.sprite.id, sel.sprite.idx)} forEntity={true} />
                             {sel.name}
                         </MenuItem>
                     }}
@@ -361,7 +363,7 @@ const CampaignCharacterSelector = observer((props: {
                 >
                     {props.campaign.characters.map((cha: EntityInterface) => (
                         <MenuItem key={cha.id} value={cha.id}>
-                            <SpriteImage sprite={new Sprite(cha.sprite.id, cha.sprite.idx)} />
+                            <SpriteImage sprite={new Sprite(cha.sprite.id, cha.sprite.idx)} forEntity={true} />
                             <ListItemText primary={cha.name} />
                         </MenuItem>
                     ))}
