@@ -37,7 +37,7 @@ export default class TerrainAddHandler extends Handler {
                     const dt = stack[i];
                     const sp = data.sprites[dt.spriteIdx];
                     const t = new Tile(new Sprite(sp.id, sp.idx));
-                    this.terrain.placeAt(dt.x, dt.y, t, i === stack.length-1);
+                    this.terrain.placeAt(dt.x, dt.y, t, false);
                 }
             }
         }
