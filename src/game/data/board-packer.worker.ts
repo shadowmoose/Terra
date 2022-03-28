@@ -40,8 +40,6 @@ export async function packTiles (tileStack: Tile[]): Promise<ProtoTileStack> {
         }))
     })
 
-    console.log(outStack);
-
     return outStack;
 }
 
