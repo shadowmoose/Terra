@@ -126,7 +126,6 @@ export function searchImages(term: string, animated: boolean = false, nameOnly: 
 		})
 	}
 
-	res.sort((a, b) => Number(a.id.startsWith("custom.")) - Number(b.id.startsWith("custom.")));
 	return res;
 }
 

@@ -1,6 +1,6 @@
 const CanvasPlus = require('pixl-canvas-plus');
 const { resolve, basename, dirname, relative } = require('path');
-const { readdir, writeFile, mkdir, stat } = require('fs').promises;
+const { readdir, writeFile, mkdir } = require('fs').promises;
 const PNG = require('pngjs').PNG;
 const imgScramble = require('image-scramble');
 
@@ -120,13 +120,21 @@ const run = async(imageDir, outDir, uid, width=48, height=48) => {
 	const imageFile = `${outDir}/sheet-${uid}.unencrypted.png`;
 	await mkdir(outDir, { recursive: true })
 	await writeFile(imageFile, buf);
+
+	// Re-insert each key into the dict, so that the "custom" sprites are pre-sorted to be last in search results.
+	for (const key of Object.keys(images).sort((a, b) => Number(a.startsWith("custom.")) - Number(b.startsWith("custom.")))) {
+		const val = images[key];
+		delete images[key];
+		images[key] = val;
+	}
+
 	await writeFile(`${outDir}/sheet-data.json`, JSON.stringify({
 		metadata: { width, height, count , uid },
 		sprites: images
 	}, null, 2));
 	console.log('Built sprite sheet. Compressing...');
 
-	const sz = (await stat(imageFile)).size;
+	// const sz = (await stat(imageFile)).size;
 	// await crush(imageFile, outDir);
 
 	return new Promise(res => {
