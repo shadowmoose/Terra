@@ -10533,11 +10533,6 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reflect-metadata@^0.1.10:
-  version "0.1.13"
-  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
-  integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
-
 regenerate-unicode-properties@^8.2.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/regenerate-unicode-properties/-/regenerate-unicode-properties-8.2.0.tgz#e5de7111d655e7ba60c057dbe9ff37c87e65cdec"
@@ -11056,13 +11051,6 @@ send@0.17.1:
     on-finished "~2.3.0"
     range-parser "~1.2.1"
     statuses "~1.5.0"
-
-serialazy@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/serialazy/-/serialazy-2.0.2.tgz#5f3344d24206f4fb4de9b3abdcb5e76c61bd2db2"
-  integrity sha512-ClOk03y7One+9t7armWIlHBDXGukmHvkkMeAzvyLb8+k6nNv0utNxaipCasSvwpM+2gwPWofMGMZFm3f8+ky0A==
-  dependencies:
-    reflect-metadata "^0.1.10"
 
 serialize-javascript@^2.1.2:
   version "2.1.2"
