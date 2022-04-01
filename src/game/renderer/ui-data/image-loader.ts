@@ -188,25 +188,30 @@ export async function loadFramesFromGif(gifURI: string): Promise<LoadedGif> {
             } catch (err) {
                 console.error(err);
             }
+
             if (!res.frames.length) {
-                await new Promise((resolve) => { // Failed to load as GIF, attempt direct load:
-                    const img = new Image();
+                await new Promise<void>((resolve) => { // Failed to load as GIF, attempt direct load:
+                    function onFail() {
+                        console.error("Failed to direct load!");
+                        res.frames.push({
+                            uid: gifURI + ":failed",
+                            source: makeFailImage()
+                        });
+                        resolve();
+                    }
+
                     console.log("Loading directly..");
+                    const img = new Image();
                     img.onload = () => {
                         res.frames.push({
                             uid: gifURI+":direct",
                             source: resizeCanvas(img)
                         });
-                        resolve(img);
+                        resolve();
                     }
-                    img.onerror = () => {
-                        res.frames.push({
-                            uid: gifURI + ":failed",
-                            source: makeFailImage()
-                        });
-                    }
-                    img.src = realURL;
+                    img.onerror = onFail;
                     img.crossOrigin = 'anonymous';
+                    img.src = realURL;
                 })
             }
             resolve(res);

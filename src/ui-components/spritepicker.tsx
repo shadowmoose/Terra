@@ -158,7 +158,7 @@ export function SpriteImage(props: {sprite: Sprite|null, onSelect?: Function, se
                 src={props.sprite?.id.replace("gif:", "")}
                 width={imageWidthPx}
                 height={imageHeightPx}
-                style={{width: '48px', height: '48px', background: 'gray'}}
+                style={{minWidth: '48px', minHeight: '48px', maxWidth: '48px', maxHeight: '48px', background: 'gray'}}
                 className={`spriteImage ${props.selected ? 'selected': ''}`}
                 title={props.sprite?.name || 'No Sprite'}
                 alt={props.sprite?.name || 'No Sprite'}
