@@ -333,8 +333,13 @@ export function SpritePickerModal(props: {open: boolean, onClose: Function, onSe
                     variant={"outlined"}
                     onClick={()=>{
                         props.onClose();
-                        props.onSelect(new Sprite("gif:"+gifUrl, -1));
-                        console.log("Selected new Gif:", gifUrl);
+                        let u = new URL(gifUrl);
+                        if (u.hostname.includes("imgur.com")) {
+                            u = u.hostname.startsWith("i.") ? u : new URL(`https://i.imgur.com${u.pathname}.gif`);
+                        }
+
+                        props.onSelect(new Sprite("gif:"+u, -1));
+                        console.log("Selected new Gif: " + u);
                     }}
                     disabled={!gifUrl.trim().startsWith("https:")}
                 >

@@ -135,7 +135,7 @@ function makeFailTexture() {
 /**
  * Resize the given canvas to fit the current grid tile dimensions.
  */
-function resizeCanvas(input: HTMLCanvasElement) {
+function resizeCanvas(input: HTMLCanvasElement|HTMLImageElement) {
     const can2 = document.createElement('canvas');
     const ctx2 = can2.getContext('2d')!;
     can2.width = GRID_TILE_PX;
@@ -149,11 +149,13 @@ function resizeCanvas(input: HTMLCanvasElement) {
 export async function loadFramesFromGif(gifURI: string): Promise<LoadedGif> {
     if (!gifURI.startsWith("gif:")) throw Error("Invalid GIF URI: " + gifURI);
 
+    const realURL = gifURI.replace(/^gif:/, "");
+
     if (!gifCache[gifURI]) {
         gifCache[gifURI] = new Promise(async resolve => {
             const res: LoadedGif = {frames: [], users: 0};
             try {
-                const gif = await fetch(gifURI.replace(/^gif:/, ""))
+                const gif = await fetch(realURL)
                     .then(resp => resp.arrayBuffer())
                     .then(buff => parseGIF(buff))
                     .then(gif => decompressFrames(gif, true));
@@ -185,16 +187,27 @@ export async function loadFramesFromGif(gifURI: string): Promise<LoadedGif> {
                 });
             } catch (err) {
                 console.error(err);
-                res.frames.push({
-                    uid: gifURI+":failed",
-                    source: makeFailImage()
-                });
             }
             if (!res.frames.length) {
-                res.frames.push({
-                    uid: gifURI+":failed",
-                    source: makeFailImage()
-                });
+                await new Promise((resolve) => { // Failed to load as GIF, attempt direct load:
+                    const img = new Image();
+                    console.log("Loading directly..");
+                    img.onload = () => {
+                        res.frames.push({
+                            uid: gifURI+":direct",
+                            source: resizeCanvas(img)
+                        });
+                        resolve(img);
+                    }
+                    img.onerror = () => {
+                        res.frames.push({
+                            uid: gifURI + ":failed",
+                            source: makeFailImage()
+                        });
+                    }
+                    img.src = realURL;
+                    img.crossOrigin = 'anonymous';
+                })
             }
             resolve(res);
         });
