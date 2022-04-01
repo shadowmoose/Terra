@@ -47,8 +47,7 @@ export const waitForSpriteLoad: Promise<HTMLCanvasElement> = new Promise(res => 
 
 	clearInterval(fpsTicker);
 	fpsTicker = setInterval(() => {
-		globalFrameIndex++;
-		globalFrameIndex %= 1000;
+		globalFrameIndex = (globalFrameIndex+1) % 1000;
 	}, 200);
 });
 
@@ -127,6 +126,7 @@ export function searchImages(term: string, animated: boolean = false, nameOnly: 
 		})
 	}
 
+	res.sort((a, b) => Number(a.id.startsWith("custom.")) - Number(b.id.startsWith("custom.")));
 	return res;
 }
 
