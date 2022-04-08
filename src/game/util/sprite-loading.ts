@@ -111,8 +111,13 @@ export function searchImages(term: string, animated: boolean = false, nameOnly: 
 	});
 
 	if (!animated) {
+		search.sort((a, b) => {
+			const inc = (a: string) => a.includes("player.") || a.includes("monster.") || a.includes("animated.") ? 1 : 0;
+			return inc(a.path) - inc(b.path);
+		});
 		search.forEach(o => {
-			for(let i=0; i < o.sprite.images.length; i++) {
+			const limit = o.sprite.animated ? 1 : o.sprite.images.length;
+			for (let i=0; i < limit; i++) {
 				if (!seen[o.path+ ":" + i]) {
 					res.push(new Sprite(o.path, i));
 				}
