@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Project
+        uses: actions/checkout@v2
+
       - name: Build Unstable Release
         uses: ./.github/workflows/builder.yml
         with:
