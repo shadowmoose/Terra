@@ -41,8 +41,7 @@ jobs:
 
       - name: Build
         run: |
-          npm run build;
-          ${{ inputs.post_build_commands }}
+          npm run build; ${{ inputs.post_build_commands }}
         env:
           CI: ""
           PUBLIC_URL: ${{ inputs.base_url }}
