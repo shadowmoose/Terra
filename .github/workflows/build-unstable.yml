@@ -18,50 +18,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Project
-        uses: actions/checkout@v2
-
-      - name: Setup node
-        uses: actions/setup-node@v1
+      - name: Build Unstable Release
+        uses: ./.github/workflows/builder.yml
         with:
-          node-version: '12'
-
-      - name: Patch broken repo links
-        run: |
-          git config --global url."https://".insteadOf git://
-
-      - id: commit
-        name: Get commit ID
-        uses: pr-mpt/actions-commit-hash@v1
-
-      - name: Install Requirements (cached)
-        uses: bahmutov/npm-install@v1.6.0
-        with:
-          working-directory: ./
-          useLockFile: true
-
-      - name: Build
-        run: |
-          npm run build
-          mv build unstable
-          mkdir -p build/unstable
-          mv unstable build
-        env:
-          CI: ""
-          PUBLIC_URL: "https://terra.rofl.wtf/unstable"
-          REACT_APP_GOOGLE_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
-          REACT_APP_SPRITE_KEY: ${{ secrets.REACT_APP_SPRITE_KEY }}
-          REACT_APP_CURRENT_SHA: ${{ steps.commit.outputs.short }}
-          REACT_APP_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-
-      - name: Deploy to Unstable Directory
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
-          publish_branch: gh-pages
-          user_name: "build-bot"
-          user_email: "github_bot@github.com"
-          allow_empty_commit: false
-          keep_files: true
-          cname: terra.rofl.wtf
+          base_url: "https://terra.rofl.wtf/unstable"
+          post_build_commands: "mv build unstable; mkdir -p build/unstable; mv unstable build"
