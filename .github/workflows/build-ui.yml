@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-      uses: ./.github/workflows/builder.yml
-      with:
-        base_url: "https://terra.rofl.wtf"
-        post_build_commands: ""
+    uses: ./.github/workflows/builder.yml
+    with:
+      base_url: "https://terra.rofl.wtf"
+      post_build_commands: ""

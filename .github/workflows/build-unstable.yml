@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-      uses: ./.github/workflows/builder.yml
-      with:
-        base_url: "https://terra.rofl.wtf/unstable"
-        post_build_commands: "mv build unstable; mkdir -p build/unstable; mv unstable build"
+    uses: ./.github/workflows/builder.yml
+    with:
+      base_url: "https://terra.rofl.wtf/unstable"
+      post_build_commands: "mv build unstable; mkdir -p build/unstable; mv unstable build"
