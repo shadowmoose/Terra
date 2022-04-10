@@ -12,3 +12,6 @@ jobs:
     with:
       base_url: "https://terra.rofl.wtf"
       post_build_commands: ""
+    secrets:
+      google_client_id: ${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
+      sprite_key: ${{ secrets.REACT_APP_SPRITE_KEY }}

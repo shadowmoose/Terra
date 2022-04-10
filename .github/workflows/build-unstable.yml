@@ -14,3 +14,6 @@ jobs:
     with:
       base_url: "https://terra.rofl.wtf/unstable"
       post_build_commands: "mv build unstable; mkdir -p build/unstable; mv unstable build"
+    secrets:
+      google_client_id: ${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
+      sprite_key: ${{ secrets.REACT_APP_SPRITE_KEY }}

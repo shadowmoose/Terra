@@ -10,6 +10,11 @@ on:
       post_build_commands:
         required: false
         type: string
+    secrets:
+      sprite_key:
+        required: true
+      google_client_id:
+        required: true
 
 
 jobs:
@@ -45,8 +50,8 @@ jobs:
         env:
           CI: ""
           PUBLIC_URL: ${{ inputs.base_url }}
-          REACT_APP_GOOGLE_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
-          REACT_APP_SPRITE_KEY: ${{ secrets.REACT_APP_SPRITE_KEY }}
+          REACT_APP_GOOGLE_CLIENT_ID: ${{ secrets.google_client_id }}
+          REACT_APP_SPRITE_KEY: ${{ secrets.sprite_key }}
           REACT_APP_CURRENT_SHA: ${{ steps.commit.outputs.short }}
           REACT_APP_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
