@@ -82,8 +82,17 @@ export const PreferencesButton = observer( (props: {controller: GameController})
                 Disconnect
             </Button>
 
+            <DialogContent style={{textAlign: "center", margin: 0, padding: 0}}>
+                <p style={{color: 'gray'}}>
+                    <Tooltip title={(process.env.REACT_APP_COMMIT_MESSAGE || 'Unknown')}>
+                        <p>
+                            <a href={`https://github.com/shadowmoose/Terra/commit/${process.env.REACT_APP_CURRENT_SHA || ''}`} target={"_blank"} style={{textDecoration: 'none'}}>
+                                {"Build ID: " + (process.env.REACT_APP_CURRENT_SHA || 'Unknown')}
+                            </a>
+                        </p>
+                    </Tooltip>
+                </p>
 
-            <DialogContent style={{textAlign: "center"}}>
                 <Typography variant="h6" component="h6" gutterBottom>Display Options</Typography>
             </DialogContent>
 

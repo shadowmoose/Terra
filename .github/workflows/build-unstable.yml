@@ -30,8 +30,8 @@ jobs:
         run: |
           git config --global url."https://".insteadOf git://
 
-      - name: Get commit ID
-        id: commit
+      - id: commit
+        name: Get commit ID
         uses: pr-mpt/actions-commit-hash@v1
 
       - name: Install Requirements (cached)
@@ -52,6 +52,7 @@ jobs:
           REACT_APP_GOOGLE_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
           REACT_APP_SPRITE_KEY: ${{ secrets.REACT_APP_SPRITE_KEY }}
           REACT_APP_CURRENT_SHA: ${{ steps.commit.outputs.short }}
+          REACT_APP_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
       - name: Deploy to Unstable Directory
         uses: peaceiris/actions-gh-pages@v3
