@@ -86,7 +86,11 @@ export const PreferencesButton = observer( (props: {controller: GameController})
                 <p style={{color: 'gray'}}>
                     <Tooltip title={(process.env.REACT_APP_COMMIT_MESSAGE || 'Unknown')}>
                         <p>
-                            <a href={`https://github.com/shadowmoose/Terra/commit/${process.env.REACT_APP_CURRENT_SHA || ''}`} target={"_blank"} style={{textDecoration: 'none'}}>
+                            <a
+                                href={`https://github.com/shadowmoose/Terra/commit/${process.env.REACT_APP_CURRENT_SHA || ''}`}
+                                target={"_blank"} style={{textDecoration: 'none'}}
+                                rel="noopener noreferrer"
+                            >
                                 {"Build ID: " + (process.env.REACT_APP_CURRENT_SHA || 'Unknown')}
                             </a>
                         </p>
