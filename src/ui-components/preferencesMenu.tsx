@@ -61,14 +61,7 @@ export const PreferencesButton = observer( (props: {controller: GameController})
         </Tooltip>
 
         <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
-            <Tooltip
-                title={"Built from commit ID: " + (process.env.REACT_APP_CURRENT_SHA || 'Unknown')}
-                style={{
-                    pointerEvents: 'auto',
-                }}
-            >
-                <DialogTitle style={{textAlign: "center"}}>User Settings</DialogTitle>
-            </Tooltip>
+            <DialogTitle style={{textAlign: "center"}}>User Settings</DialogTitle>
 
             <Button
                 onClick={() => {
@@ -84,7 +77,7 @@ export const PreferencesButton = observer( (props: {controller: GameController})
 
             <DialogContent style={{textAlign: "center", margin: 0, padding: 0}}>
                 <p style={{color: 'gray'}}>
-                    <Tooltip title={(process.env.REACT_APP_COMMIT_MESSAGE || 'Unknown')}>
+                    <Tooltip title={<div style={{whiteSpace: "pre-line"}}>{(process.env.REACT_APP_COMMIT_MESSAGE || 'Unable to locate build ID.')}</div>}>
                         <p>
                             <a
                                 href={`https://github.com/shadowmoose/Terra/commit/${process.env.REACT_APP_CURRENT_SHA || ''}`}
