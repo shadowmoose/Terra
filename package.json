@@ -12,7 +12,7 @@
     "@material-ui/core": "^4.10.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
-    "dexie": "^3.0.1",
+    "dexie": "^3.2.2",
     "dexie-export-import": "^1.0.0-rc.2",
     "downloadjs": "^1.4.7",
     "fontsource-roboto": "^2.1.4",
