@@ -72,8 +72,15 @@ export async function makeSB() {
     if (sb) {
         sb.kill(new Error('Closed to launch new Peer connection.'));
     }
-    return new Switchboard({
-        seed: await getSeed()
+    return new Switchboard('moose-terra', {
+        seed: await getSeed(),
+        trackers: [
+            {
+                uri: 'wss://switchboard.rofl.wtf',
+                isNativeServer: true
+            },
+            ...await Switchboard.defaultTrackers()
+        ]
     });
 }
 

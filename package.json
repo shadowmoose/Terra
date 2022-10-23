@@ -20,7 +20,6 @@
     "hotkeys-js": "^3.8.1",
     "mobx": "^5.15.4",
     "mobx-react-lite": "^2.0.7",
-    "node-sass": "^4.14.1",
     "notistack": "^0.9.17",
     "pako": "^1.0.11",
     "pixi-cull": "^1.0.1",
@@ -34,8 +33,9 @@
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
     "react-youtube": "^7.11.3",
+    "sass": "^1.55.0",
     "shuffle-seed": "1.1.6",
-    "switchboard.js": "1.2.0",
+    "switchboard.js": "2.1.0",
     "uuid": "^8.2.0"
   },
   "eslintConfig": {
